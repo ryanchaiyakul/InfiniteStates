@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 
-import com.team2568.frc2020.loops.Looper;
+import com.team2568.frc2020.loops.ILooper;
 import com.team2568.frc2020.loops.Loop;
 
 /**
@@ -22,9 +22,11 @@ import com.team2568.frc2020.loops.Loop;
  * project.
  */
 public class Robot extends TimedRobot {
-	private Looper testLooper;
-	private ArrayList<Loop> testLoops = new ArrayList<Loop>();
+	private ILooper testLooper;
 	private Loop testLoop;
+	
+	private ILooper subsystemLooper;
+	private SubsystemTest testSubsystem;
 
 	/**
 	 * This function is run when the robot is first started up and should be 	 
@@ -33,8 +35,12 @@ public class Robot extends TimedRobot {
 	@Override
 	public void robotInit() {
 		testLoop = new LoopTest();
-        testLoops.add(testLoop);
-        testLooper = new Looper(testLoops);
+		testLooper = new ILooper("test");
+		testLooper.registerLoop(testLoop);
+
+		testSubsystem = new SubsystemTest();
+		subsystemLooper = new ILooper("subsystem", 10);
+		subsystemLooper.registerLoop(testSubsystem);
 	}
 
 	/**
@@ -76,8 +82,9 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void teleopInit() {
-	    testLooper.start();
-    }
+		testLooper.start();    
+    		subsystemLooper.start();
+	}
 
 	/**
 	 * This function is called periodically during operator control.
@@ -92,6 +99,7 @@ public class Robot extends TimedRobot {
 	@Override
 	public void disabledInit() {
 		testLooper.stop();
+		subsystemLooper.stop();
 	}
 
 	/**
