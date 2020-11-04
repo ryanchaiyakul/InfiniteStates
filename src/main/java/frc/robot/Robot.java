@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import edu.wpi.first.wpilibj.TimedRobot;
 
 import com.team2568.frc2020.loops.Looper;
+import com.team2568.frc2020.loops.Loop;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -31,10 +32,9 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void robotInit() {
-		testLooper = new Looper();
 		testLoop = new LoopTest();
-
-		testLoops.add(testLoop);
+        testLoops.add(testLoop);
+        testLooper = new Looper(testLoops);
 	}
 
 	/**
@@ -76,14 +76,14 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void teleopInit() {
-	}
+	    testLooper.start();
+    }
 
 	/**
 	 * This function is called periodically during operator control.
 	 */
 	@Override
 	public void teleopPeriodic() {
-		testLooper.start();
 	}
 
 	/**
