@@ -3,18 +3,19 @@ package frc.robot;
 import com.team2568.frc2020.loops.Loop;
 
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class LoopTest implements Loop {
 	public void onStart() {
-		System.out.println("starting my loop");
+		SmartDashboard.putBoolean("Loop started", true);
 	}
 
 	public void onLoop() {
 		double timestamp = Timer.getFPGATimestamp();
-		System.out.println("executing loop at " + timestamp);
+		SmartDashboard.putNumber("Loop execution" timestamp);
 	}
 
 	public void onStop() {
-		System.out.println("stopping my loop");
+		SmartDashboard.putBoolean("Loop started", false);
 	}
 }
