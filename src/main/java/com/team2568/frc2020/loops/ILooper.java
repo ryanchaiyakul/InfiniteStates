@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import com.team2568.frc2020.Constants;
 
 import edu.wpi.first.wpilibj.Notifier;
-import edu.wpi.first.wpilibj.timer.Timer;
+import edu.wpi.first.wpilibj.Timer;
 
 /**
  * ILooper instances manage a list of loops that share a common period.
@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.timer.Timer;
  */
 
 public class ILooper {
-	private final double kPeriod;
+	private double kPeriod;
 
 	private boolean mActive = false;
 	private final Object mLoopLock = new Object();
@@ -21,7 +21,7 @@ public class ILooper {
 	private Notifier mNotifier;
 	private ArrayList<Loop> mLoops = new ArrayList<Loop>();
 	
-	private Runnable mDefaultRunnable = new Runnable() {
+	private final Runnable mDefaultRunnable = new Runnable() {
 		@Override
 		public void run() {
 			if (mActive) {
@@ -35,21 +35,14 @@ public class ILooper {
 		}
 	};
 	
-	public void Looper(String name) {
-		Looper(name, Constants.kDefaultPeriod, mDefaultRunnable);
+	public ILooper(String name) {
+		this(name, Constants.kDefaultPeriod);
 	}
 
-	public void Looper(String name, double period) {
-		Looper(name, period, mDefaultRunnable);
-	}
-
-	public void Looper(String name, Runnable runnable) {
-		Looper(name, Constants.kDefaultPeriod, runnable);
-	}
-
-	public void Looper(String name, double period, Runnable runnable) {
+	public ILooper(String name, double period) {
 		this.kPeriod = period;
-		this.mNotifier = new Notifier(runnable);
+
+		this.mNotifier = new Notifier(mDefaultRunnable);
 		mNotifier.setName(name);
 	}
 
@@ -63,7 +56,7 @@ public class ILooper {
 
 	public void start() {
 		if (!mActive) {
-			double now = Timper.getFPGATimestamp();
+			double now = Timer.getFPGATimestamp();
 			synchronized(mLoopLock) {
 				for (Loop loop : mLoops) {
 					loop.onStart(now);

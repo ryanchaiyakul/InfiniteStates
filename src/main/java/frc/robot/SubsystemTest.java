@@ -2,14 +2,14 @@ package frc.robot;
 
 import com.team2568.frc2020.subsystems.Subsystem;
 
-import wpilib.edu.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 class SubsystemTest extends Subsystem {
 	private SubsystemTest mInstance;
 
 	public SubsystemTest getInstance() {
 		if (mInstance == null) {
-			mInstance = SubsystemTest();
+			mInstance = new SubsystemTest();
 		}
 		return mInstance;
 	}
@@ -28,7 +28,7 @@ class SubsystemTest extends Subsystem {
 	public void writeOutputs() {
 	}
 
-	public void writeSmartDashboard() {
+	public void writeDashboard() {
 		SmartDashboard.putNumber("onLoop", mStart);
 	}
 }

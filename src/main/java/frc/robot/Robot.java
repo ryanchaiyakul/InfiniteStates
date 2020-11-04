@@ -35,11 +35,11 @@ public class Robot extends TimedRobot {
 	@Override
 	public void robotInit() {
 		testLoop = new LoopTest();
-		testLooper = new ILooper("test");
+		testLooper = new ILooper("test", 1);
 		testLooper.registerLoop(testLoop);
 
 		testSubsystem = new SubsystemTest();
-		subsystemLooper = new ILooper("subsystem", 10);
+		subsystemLooper = new ILooper("subsystem");
 		subsystemLooper.registerLoop(testSubsystem);
 	}
 
