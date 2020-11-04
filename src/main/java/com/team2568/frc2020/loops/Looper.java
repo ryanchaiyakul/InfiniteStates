@@ -35,7 +35,8 @@ public class Looper {
 		}
 	};
 	
-	public Looper() {
+	public Looper(ArrayList<Loop> loops) {
+		this.mLoops = loops;
 		this.kPeriod = Constants.kDefaultPeriod;
 		this.mNotifier = new Notifier(this.mDefaultRunnable);
 	}
@@ -65,11 +66,5 @@ public class Looper {
 			}
 			mActive = false;
 		}	
-	}
-
-	public void registerLoop(Loop loop) {
-		synchronized(mLoopLock) {
-			mLoops.add(loop);
-		}
 	}
 }

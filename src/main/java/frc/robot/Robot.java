@@ -7,9 +7,11 @@
 
 package frc.robot;
 
+import java.util.ArrayList;
+
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import com.team2568.frc2020.loops.Looper;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -19,10 +21,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * project.
  */
 public class Robot extends TimedRobot {
-	private static final String kDefaultAuto = "Default";
-	private static final String kCustomAuto = "My Auto";
-	private String m_autoSelected;
-	private final SendableChooser<String> m_chooser = new SendableChooser<>();
+	private Looper testLooper;
+	private ArrayList<Loop> testLoops = new ArrayList<Loop>();
+	private Loop testLoop;
 
 	/**
 	 * This function is run when the robot is first started up and should be 	 
@@ -30,6 +31,10 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void robotInit() {
+		testLooper = new Looper();
+		testLoop = new LoopTest();
+
+		testLoops.add(testLoop);
 	}
 
 	/**
@@ -64,15 +69,6 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
-		switch (m_autoSelected) {
-		case kCustomAuto:
-			// Put custom auto code here
-			break;
-		case kDefaultAuto:
-		default:
-			// Put default auto code here
-        		break;
-		}
 	}
 
 	/**
@@ -87,6 +83,7 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
+		testLooper.start();
 	}
 
 	/**
@@ -94,6 +91,7 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void disabledInit() {
+		testLooper.stop();
 	}
 
 	/**
