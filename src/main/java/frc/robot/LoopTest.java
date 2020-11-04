@@ -12,7 +12,7 @@ public class LoopTest implements Loop {
 
 	public void onLoop() {
 		double timestamp = Timer.getFPGATimestamp();
-		SmartDashboard.putNumber("Loop execution" timestamp);
+		SmartDashboard.putNumber("Loop execution", timestamp);
 	}
 
 	public void onStop() {

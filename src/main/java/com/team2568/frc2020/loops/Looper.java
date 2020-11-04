@@ -36,10 +36,13 @@ public class Looper {
 	};
 	
 	public Looper(ArrayList<Loop> loops) {
-		this.mLoops = loops;
-		this.kPeriod = Constants.kDefaultPeriod;
-		this.mNotifier = new Notifier(this.mDefaultRunnable);
+		Looper(loops, Constants.kDefaultPeriod);
 	}
+
+	public Looper(ArrayList<Loop> loops, double period) {
+		this.mLoops = loops;
+		this.kPeriod = period;
+		this.mNotifier = new Notifier(this.mDefaultRunnable);
 
 	public void start() {
 		if (!mActive) {
