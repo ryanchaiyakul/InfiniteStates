@@ -22,11 +22,6 @@ import com.team2568.frc2020.loops.Loop;
  * project.
  */
 public class Robot extends TimedRobot {
-	private ILooper testLooper;
-	private Loop testLoop;
-	
-	private ILooper subsystemLooper;
-	private SubsystemTest testSubsystem;
 
 	/**
 	 * This function is run when the robot is first started up and should be 	 
@@ -34,13 +29,6 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void robotInit() {
-		testLoop = new LoopTest();
-		testLooper = new ILooper("test", 1);
-		testLooper.registerLoop(testLoop);
-
-		testSubsystem = new SubsystemTest();
-		subsystemLooper = new ILooper("subsystem");
-		subsystemLooper.registerLoop(testSubsystem);
 	}
 
 	/**
@@ -82,8 +70,6 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void teleopInit() {
-		testLooper.start();    
-    		subsystemLooper.start();
 	}
 
 	/**
@@ -98,8 +84,6 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void disabledInit() {
-		testLooper.stop();
-		subsystemLooper.stop();
 	}
 
 	/**

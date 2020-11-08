@@ -25,10 +25,9 @@ public class ILooper {
 		@Override
 		public void run() {
 			if (mActive) {
-				double now = Timer.getFPGATimestamp();
 				synchronized(mLoopLock) {
 					for (Loop loop : mLoops) {
-						loop.onLoop(now);
+						loop.onLoop();
 					}
 				}
 			}
@@ -56,10 +55,9 @@ public class ILooper {
 
 	public void start() {
 		if (!mActive) {
-			double now = Timer.getFPGATimestamp();
 			synchronized(mLoopLock) {
 				for (Loop loop : mLoops) {
-					loop.onStart(now);
+					loop.onStart();
 				}
 			}
 			mActive = true;
@@ -74,10 +72,9 @@ public class ILooper {
 			// Stop notifier before executing onStop so that notifier does not execute onLoop afterwards
 			mNotifier.stop();
 
-			double now = Timer.getFPGATimestamp();
 			synchronized(mLoopLock) {
 				for (Loop loop: mLoops) {
-					loop.onStop(now);
+					loop.onStop();
 				}
 			}
 			mActive = false;
