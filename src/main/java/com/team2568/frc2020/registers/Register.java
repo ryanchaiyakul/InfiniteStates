@@ -1,4 +1,4 @@
-package com.team2568.registers;
+package com.team2568.frc2020.registers;
 
 
 /**
@@ -7,7 +7,7 @@ package com.team2568.registers;
 
 public abstract class Register<T> {
 	private T mValue;
-	private object mLock = new Object();
+	private Object mLock = new Object();
 
 	public void set(T value) {
 		synchronized(mLock) {
