@@ -6,8 +6,8 @@ package com.team2568.frc2020.registers;
  */
 
 public class Register<T> {
-	private T mValue;
-	private Object mLock = new Object();
+	public T mValue;
+	public Object mLock = new Object();
 
 	public void set(T value) {
 		synchronized(mLock) {
