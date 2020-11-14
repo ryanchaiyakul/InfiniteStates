@@ -7,13 +7,11 @@
 
 package frc.robot;
 
-import java.util.ArrayList;
-
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.team2568.frc2020.loops.ILooper;
-import com.team2568.frc2020.loops.Loop;
-
+import com.team2568.frc2020.Registers;
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the TimedRobot
@@ -77,6 +75,8 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
+		Registers.kMyReg.set(3);
+		SmartDashboard.putNumber("myReg", Registers.kMyReg.get());
 	}
 
 	/**

@@ -5,7 +5,7 @@ package com.team2568.frc2020.registers;
  * A Register restricts writing and reading of a singluar value.
  */
 
-public abstract class Register<T> {
+public class Register<T> {
 	private T mValue;
 	private Object mLock = new Object();
 
