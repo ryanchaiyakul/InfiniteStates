@@ -6,7 +6,7 @@ package com.team2568.frc2020.registers;
  */
 
 public class Register<T> {
-	public T mValue;
+	private T mValue;
 	public Object mLock = new Object();
 
 	public void set(T value) {

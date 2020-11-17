@@ -1,18 +1,21 @@
 package com.team2568.frc2020.registers;
 
 public class UpdateOnceRegister<T> extends UpdateRegister<T> {
-	@override
+	private boolean updated = false;
+
+	@Override
 	public void set(T value) {
 		synchronized (mLock) {
-			if (mCurrent == null) {
+			if (!updated) {
 				super.set(value);
+				updated = true;
 			}
 		}
 	}
 
-	@override
-	public void update(T value) {
+	@Override
+	public void update() {
 		super.update();
-		mCurrent = null;
+		updated = false;
 	}
 }

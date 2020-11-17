@@ -5,11 +5,10 @@ import java.util.ArrayList;
 import com.team2568.frc2020.Constants;
 
 import edu.wpi.first.wpilibj.Notifier;
-import edu.wpi.first.wpilibj.Timer;
 
 /**
- * ILooper instances manage a list of loops that share a common period.
- * Loops can be added dynamically when the loops are stopped and cannot be removed.
+ * ILooper instances manage a list of loops that share a common period. Loops
+ * can be added dynamically when the loops are stopped and cannot be removed.
  */
 
 public class ILooper {
@@ -20,12 +19,12 @@ public class ILooper {
 
 	private Notifier mNotifier;
 	private ArrayList<Loop> mLoops = new ArrayList<Loop>();
-	
+
 	private final Runnable mDefaultRunnable = new Runnable() {
 		@Override
 		public void run() {
 			if (mActive) {
-				synchronized(mLoopLock) {
+				synchronized (mLoopLock) {
 					for (Loop loop : mLoops) {
 						loop.onLoop();
 					}
@@ -33,7 +32,7 @@ public class ILooper {
 			}
 		}
 	};
-	
+
 	public ILooper(String name) {
 		this(name, Constants.kDefaultPeriod);
 	}
@@ -47,7 +46,7 @@ public class ILooper {
 
 	public void registerLoop(Loop loop) {
 		if (!mActive) {
-			synchronized(mLoopLock) {
+			synchronized (mLoopLock) {
 				mLoops.add(loop);
 			}
 		}
@@ -55,7 +54,7 @@ public class ILooper {
 
 	public void start() {
 		if (!mActive) {
-			synchronized(mLoopLock) {
+			synchronized (mLoopLock) {
 				for (Loop loop : mLoops) {
 					loop.onStart();
 				}
@@ -68,16 +67,15 @@ public class ILooper {
 	}
 
 	public void stop() {
-		if(mActive) {
-			// Stop notifier before executing onStop so that notifier does not execute onLoop afterwards
+		if (mActive) {
 			mNotifier.stop();
 
-			synchronized(mLoopLock) {
-				for (Loop loop: mLoops) {
+			synchronized (mLoopLock) {
+				for (Loop loop : mLoops) {
 					loop.onStop();
 				}
 			}
 			mActive = false;
-		}	
+		}
 	}
 }
