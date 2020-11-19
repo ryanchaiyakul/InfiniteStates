@@ -10,4 +10,3 @@ public interface Loop {
 	public void onLoop();
 	public void onStop();
 }
-

@@ -12,7 +12,7 @@ public class UpdateRegister<T> extends Register<T> {
 
 	public void update() {
 		synchronized (mLock) {
-			set(mCurrent);
+			super.set(mCurrent);
 		}
 	}
 }

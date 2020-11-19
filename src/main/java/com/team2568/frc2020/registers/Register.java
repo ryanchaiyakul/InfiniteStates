@@ -1,6 +1,5 @@
 package com.team2568.frc2020.registers;
 
-
 /**
  * A Register restricts writing and reading of a singluar value.
  */
@@ -10,13 +9,13 @@ public class Register<T> {
 	public Object mLock = new Object();
 
 	public void set(T value) {
-		synchronized(mLock) {
+		synchronized (mLock) {
 			this.mValue = value;
 		}
 	}
 
 	public T get() {
-		synchronized(mLock) {
+		synchronized (mLock) {
 			return mValue;
 		}
 	}
