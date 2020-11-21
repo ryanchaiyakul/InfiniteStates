@@ -4,6 +4,8 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.team2568.frc2020.Constants;
+import com.team2568.frc2020.Registers;
+import com.team2568.frc2020.registers.UpdateRegister;
 import com.team2568.frc2020.states.ShooterState;
 import com.team2568.lib.drivers.SparkMaxFactory;
 
@@ -14,7 +16,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Shooter extends Subsystem {
     private static Shooter mInstance;
-    private ShooterState mState;
+
+    private double mRPM;
+    private boolean mLocked;
 
     private double mSpinStart;
 
@@ -33,7 +37,7 @@ public class Shooter extends Subsystem {
         motor.setIdleMode(IdleMode.kCoast);
     }
 
-    public Shooter() {
+    private Shooter() {
         lMotor = SparkMaxFactory.getDefault(Constants.kShooterLMotor);
         SparkMaxFactory.setPIDF(lMotor, Constants.kShooterkP, Constants.kShooterkI, Constants.kShooterkD,
                 Constants.kShooterkF);
@@ -45,70 +49,77 @@ public class Shooter extends Subsystem {
         lock = new DoubleSolenoid(Constants.kShooterF, Constants.kShooterR);
     }
 
+    public UpdateRegister<?> getRegister() {
+        return Registers.kShooterState;
+    }
+
     public void onStart() {
-        mState = ShooterState.OFF;
+        Registers.kShooterState.set(ShooterState.OFF);
         mSpinStart = 0;
     }
 
     public void evaluateState() {
-        switch (mState) {
+        switch (Registers.kShooterState.get()) {
             case OFF:
+                mRPM = 0;
+                mLocked = true;
+
                 if (Constants.kOperatorController.getRightTrigger()) {
-                    mState = ShooterState.SPIN;
-                } else if (Constants.kOperatorController.getStartButton()) {
-                    mState = ShooterState.TURN;
-                } else if (Constants.kOperatorController.getBackButton()) {
-                    mState = ShooterState.ROTATE;
+                    Registers.kShooterState.set(ShooterState.SPIN);
+                    mRPM = Constants.kShooterRPM;
                 }
                 break;
             case SPIN:
+                mRPM = Constants.kShooterRPM;
+                mLocked = true;
+
                 if (Constants.kOperatorController.getRightTrigger()) {
                     if (mSpinStart == 0) {
                         mSpinStart = Timer.getFPGATimestamp();
                     }
 
                     if (Timer.getFPGATimestamp() - mSpinStart > Constants.kShooterSpinTime) {
-                        mState = ShooterState.SHOOT;
+                        Registers.kShooterState.set(ShooterState.SHOOT);
+                        mLocked = false;
                         mSpinStart = 0;
                     }
                 } else {
-                    mState = ShooterState.OFF;
+                    Registers.kShooterState.set(ShooterState.OFF);
+                    mRPM = 0;
                     mSpinStart = 0;
                 }
                 break;
             case SHOOT:
+                mRPM = Constants.kShooterRPM;
+                mLocked = false;
+
                 if (!Constants.kOperatorController.getRightTrigger()) {
-                    mState = ShooterState.OFF;
-                }
-                break;
-            case TURN:
-                if (!Constants.kOperatorController.getStartButton()) {
-                    mState = ShooterState.OFF;
-                }
-                break;
-            case ROTATE:
-                if (!Constants.kOperatorController.getBackButton()) {
-                    mState = ShooterState.OFF;
+                    Registers.kShooterState.set(ShooterState.OFF);
+                    mRPM = 0;
+                    mLocked = true;
                 }
                 break;
         }
     }
 
     public void setState() {
-        setRPM(mState.getRPM());
-        setLock(mState.isLocked());
+        setRPM();
+        setLock();
     }
 
-    public void setRPM(double rpm) {
-        if (rpm != 0) {
-            lMotor.getPIDController().setReference(rpm, ControlType.kVelocity);
+    /**
+     * sets PID refrence if rpm != 0. If rpm == 0, the motors will be disabled
+     */
+    public void setRPM() {
+        if (mRPM != 0) {
+            lMotor.getPIDController().setReference(mRPM, ControlType.kVelocity);
         } else {
             lMotor.set(0);
         }
     }
 
-    public void setLock(boolean locked) {
-        if (locked) {
+    public void setLock() {
+        if (mLocked) {
             lock.set(Value.kReverse);
         } else {
             lock.set(Value.kForward);
@@ -122,8 +133,12 @@ public class Shooter extends Subsystem {
 
     public void writeDashboard() {
         SmartDashboard.putNumber("ShooterRPM", lMotor.getEncoder().getVelocity());
-        SmartDashboard.putBoolean("AtRPM", mState.atRPM(lMotor.getEncoder().getVelocity()));
-        SmartDashboard.putBoolean("isLocked", mState.isLocked());
-        SmartDashboard.putString("ShooterState", mState.toString());
+        SmartDashboard.putBoolean("AtRPM", atRPM(lMotor.getEncoder().getVelocity()));
+        SmartDashboard.putBoolean("isLocked", mLocked);
+        SmartDashboard.putString("ShooterState", Registers.kShooterState.toString());
+    }
+
+    public boolean atRPM(double rpm) {
+        return Constants.kShooterThreshold < Math.abs(mRPM - rpm);
     }
 }

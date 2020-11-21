@@ -25,7 +25,7 @@ public class ILooper {
 
 	// Registered objects
 	private ArrayList<Loop> mLoops = new ArrayList<Loop>();
-	private ArrayList<UpdateRegister> mUpdateRegisters = new ArrayList<UpdateRegister>();
+	private ArrayList<UpdateRegister<?>> mUpdateRegisters = new ArrayList<UpdateRegister<?>>();
 
 	// Runnable instance that executes onLoop for every loop and updates registers
 	private final Runnable mDefaultRunnable = new Runnable() {
@@ -71,7 +71,7 @@ public class ILooper {
 	 * 
 	 * @param register
 	 */
-	public void registerRegister(UpdateRegister register) {
+	public void registerRegister(UpdateRegister<?> register) {
 		if (!mActive) {
 			mUpdateRegisters.add(register);
 		}
@@ -118,7 +118,7 @@ public class ILooper {
 	 * Executes update for every updatable register registered to this looper
 	 */
 	private void updateRegisters() {
-		for (UpdateRegister updateRegister : mUpdateRegisters) {
+		for (UpdateRegister<?> updateRegister : mUpdateRegisters) {
 			updateRegister.update();
 		}
 	}

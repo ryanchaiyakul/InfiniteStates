@@ -68,4 +68,9 @@ public class SparkMaxFactory {
         pidController.setD(kD);
         pidController.setFF(kF);
     }
+
+    public static void setOutput(CANSparkMax motor, double min, double max) {
+        CANPIDController pidController = motor.getPIDController();
+        pidController.setOutputRange(min, max);
+    }
 }

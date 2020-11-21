@@ -11,10 +11,14 @@ public class Constants {
 	// CAN Ports
 	public static final int kShooterLMotor = 1;
 	public static final int kShooterRMotor = 2;
+	public static final int kPivotMotor = 3;
 
 	// Solenoid Ports
 	public static final int kShooterF = 1;
 	public static final int kShooterR = 0;
+
+	// Digital Ports
+	public static final int kPivotLimit = 1;
 	
 	// Controller Constants
 	public static final double kTriggerThreshold = 0.1;
@@ -32,4 +36,13 @@ public class Constants {
 	public static final double kShooterkI = 0;
 	public static final double kShooterkD = 0;
 	public static final double kShooterkF = 0;
+
+	// Pivot Constants
+	public static final double kPivotMin = -0.1;
+	public static final double kPivotMax = 0.5;
+
+	public static final double kPivotkP = 0;
+	public static final double kPivotkI = 0;
+	public static final double kPivotkD = 0;
+	public static final double kPivotkF = 0;
 }

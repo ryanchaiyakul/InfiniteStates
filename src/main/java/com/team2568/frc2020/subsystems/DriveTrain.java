@@ -1,8 +1,10 @@
 package com.team2568.frc2020.subsystems;
 
+import com.team2568.frc2020.Registers;
+import com.team2568.frc2020.registers.UpdateRegister;
+
 public class DriveTrain extends Subsystem {
     private static DriveTrain mInstance;
-
 
     public static DriveTrain getInstance() {
         if (mInstance == null) {
@@ -14,6 +16,10 @@ public class DriveTrain extends Subsystem {
 
     public DriveTrain() {
 
+    }
+
+    public UpdateRegister<?> getRegister() {
+        return Registers.kDriveTrainState;
     }
 
     public void onStart() {

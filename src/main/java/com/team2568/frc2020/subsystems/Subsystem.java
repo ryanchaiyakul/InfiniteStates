@@ -2,6 +2,7 @@ package com.team2568.frc2020.subsystems;
 
 import com.team2568.frc2020.Registers;
 import com.team2568.frc2020.loops.Loop;
+import com.team2568.frc2020.registers.UpdateRegister;
 
 public abstract class Subsystem {
     private final Loop mLoop = new Loop() {
@@ -29,6 +30,8 @@ public abstract class Subsystem {
     public Loop getLoop() {
         return mLoop;
     }
+
+    public abstract UpdateRegister<?> getRegister();
 
     public abstract void onStart();
 
