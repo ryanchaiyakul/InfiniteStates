@@ -2,28 +2,22 @@ package com.team2568.frc2020.subsystems;
 
 import com.team2568.frc2020.Registers;
 import com.team2568.frc2020.loops.Loop;
-import com.team2568.frc2020.registers.UpdateRegister;
 
+/**
+ * Subsystems should have one instance and be registered to the SubsystemManager
+ * instance. Outputs (Motors) should not be set until the setOutput call to
+ * avoid glitches during computation.
+ */
 public abstract class Subsystem {
     private final Loop mLoop = new Loop() {
         @Override
-        public void onStart() {
-            onStart();
-        }
-
-        @Override
         public void onLoop() {
-            evaluateState();
-            setState();
+            compute();
+            setOutputs();
 
-            if (Registers.kDashboard.get()) {
-                writeDashboard();
+            if (Registers.kTelemetry.get()) {
+                outputTelemetry();
             }
-        }
-
-        @Override
-        public void onStop() {
-            onStop();
         }
     };
 
@@ -31,16 +25,16 @@ public abstract class Subsystem {
         return mLoop;
     }
 
-    public abstract UpdateRegister<?> getRegister();
+    // Compute next state and local values
+    public abstract void compute();
 
-    public abstract void onStart();
+    // Read from results from compute and set motors etc.
+    public abstract void setOutputs();
 
-    public abstract void onStop();
-
-    public abstract void evaluateState();
-
-    public abstract void setState();
-
+    // Output permanent/a
     public abstract void writeDashboard();
+
+    // Debugging dashboard statements
+    public abstract void outputTelemetry();
 
 }

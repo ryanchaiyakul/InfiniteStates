@@ -1,5 +1,5 @@
 package com.team2568.frc2020.states;
 
 public enum ShooterState {
-    OFF, SPIN, SHOOT;
+    OFF, SPIN, SHOOT, RESET;
 }

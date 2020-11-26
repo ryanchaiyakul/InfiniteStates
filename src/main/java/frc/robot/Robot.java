@@ -7,11 +7,7 @@
 
 package frc.robot;
 
-import com.team2568.frc2020.Registers;
-import com.team2568.frc2020.loops.ILooper;
-
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -21,10 +17,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * project.
  */
 public class Robot extends TimedRobot {
-	private TestLoop testLoop;
-	private TestLoopTwo testLoopTwo;
-
-	private ILooper iLooper;
 
 	/**
 	 * This function is run when the robot is first started up and should be used
@@ -32,15 +24,6 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void robotInit() {
-		testLoop = new TestLoop();
-		testLoopTwo = new TestLoopTwo();
-
-		iLooper = new ILooper("test",5);
-
-		iLooper.registerLoop(testLoop);
-		iLooper.registerLoop(testLoopTwo);
-		iLooper.registerRegister(Registers.kX);
-		iLooper.registerRegister(Registers.kY);
 	}
 
 	/**
@@ -70,8 +53,6 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void autonomousInit() {
-		SmartDashboard.putBoolean("Auto", true);
-		iLooper.start();
 	}
 
 	/**
@@ -100,8 +81,6 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void disabledInit() {
-		SmartDashboard.putBoolean("Auto", false);
-		iLooper.stop();
 	}
 
 	/**

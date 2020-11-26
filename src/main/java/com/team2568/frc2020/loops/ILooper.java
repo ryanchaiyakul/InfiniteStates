@@ -10,8 +10,8 @@ import edu.wpi.first.wpilibj.Notifier;
 /**
  * ILooper instances manage a list of loops that share a common period. Loops
  * can be added dynamically when inactive. However, loops cannot be removed.
- * Register a register to a looper if a loop here is the main source (FSMs are
- * output latched).
+ * Register a register to a looper if a loop here is the source (FSMs are output
+ * latched).
  */
 
 public class ILooper {
@@ -59,7 +59,7 @@ public class ILooper {
 	 * @param loop
 	 */
 	public void registerLoop(Loop loop) {
-		if (!mActive) {
+		if (!isActive()) {
 			synchronized (mLoopLock) {
 				mLoops.add(loop);
 			}
@@ -72,44 +72,28 @@ public class ILooper {
 	 * @param register
 	 */
 	public void registerRegister(UpdateRegister<?> register) {
-		if (!mActive) {
+		if (!isActive()) {
 			mUpdateRegisters.add(register);
 		}
 	}
 
 	/**
-	 * Starts periodic notifier and executes loops' onStart
+	 * Starts periodic notifier and runs one cycle with the LooperState as RESET
 	 */
 	public void start() {
-		if (!mActive) {
-			synchronized (mLoopLock) {
-				for (Loop loop : mLoops) {
-					loop.onStart();
-				}
-			}
-			updateRegisters();
-
+		if (!isActive()) {
+			mNotifier.startPeriodic(kPeriod);
 			mActive = true;
-
-			mNotifier.startPeriodic(this.kPeriod);
 		}
 
 	}
 
 	/**
-	 * Stops periodic notifier and executes loops' onStop
+	 * Stops periodic notifier and executes one cycle with the LooperState as STOP
 	 */
 	public void stop() {
-		if (mActive) {
+		if (isActive()) {
 			mNotifier.stop();
-
-			synchronized (mLoopLock) {
-				for (Loop loop : mLoops) {
-					loop.onStop();
-				}
-			}
-			updateRegisters();
-
 			mActive = false;
 		}
 	}
@@ -117,9 +101,31 @@ public class ILooper {
 	/**
 	 * Executes update for every updatable register registered to this looper
 	 */
-	private void updateRegisters() {
+	public void updateRegisters() {
 		for (UpdateRegister<?> updateRegister : mUpdateRegisters) {
 			updateRegister.update();
 		}
+	}
+
+	/**
+	 * Executes a single cycle of the runnable. Does not update before computing
+	 */
+	public void step() {
+		synchronized (mLoopLock) {
+			for (Loop loop : mLoops) {
+				loop.onLoop();
+			}
+		}
+
+		updateRegisters();
+	}
+
+	/**
+	 * Self explanatory
+	 * 
+	 * @return
+	 */
+	public boolean isActive() {
+		return mActive;
 	}
 }
