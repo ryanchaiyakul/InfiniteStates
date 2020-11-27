@@ -10,8 +10,9 @@ import com.team2568.frc2020.registers.StoppableRegister;
  * passed along side the subsystem will be set to its respective reset and stop
  * state when start and stop are called.
  */
-public class SubsystemManager extends ILooper {
+public class SubsystemManager {
     private static SubsystemManager mInstance;
+    private ILooper iLooper;
     private final Object mStateRegisterLock = new Object();
 
     private ArrayList<StoppableRegister<?>> mStateRegisters = new ArrayList<StoppableRegister<?>>();
@@ -30,7 +31,7 @@ public class SubsystemManager extends ILooper {
     }
 
     private SubsystemManager() {
-        super("SubsystemManager");
+        iLooper = new ILooper("SubsystemManager");
     }
 
     /**
@@ -41,10 +42,10 @@ public class SubsystemManager extends ILooper {
      * @param stateRegister
      */
     public void registerSubsystem(Subsystem subsystem, StoppableRegister<?> stateRegister) {
-        registerLoop(subsystem.getLoop());
+        iLooper.registerLoop(subsystem.getLoop());
 
         // Register stoppable register
-        if (!isActive()) {
+        if (!iLooper.isActive()) {
             mStateRegisters.add(stateRegister);
         }
     }
@@ -52,27 +53,25 @@ public class SubsystemManager extends ILooper {
     /**
      * Sets state registers to reset before starting loops
      */
-    @Override
     public void start() {
-        if (!isActive()) {
+        if (!iLooper.isActive()) {
             synchronized (mStateRegisterLock) {
                 for (StoppableRegister<?> stateRegister : mStateRegisters) {
                     stateRegister.reset();
                 }
 
-                updateRegisters();
+                iLooper.updateRegisters();
             }
-            super.start();
+            iLooper.start();
         }
     }
 
     /**
      * Sets state registers to stop before executing one cycle.
      */
-    @Override
     public void stop() {
-        if (!isActive()) {
-            super.stop();
+        if (!iLooper.isActive()) {
+            iLooper.stop();
 
             synchronized (mStateRegisterLock) {
                 for (StoppableRegister<?> stateRegister : mStateRegisters) {
@@ -80,8 +79,8 @@ public class SubsystemManager extends ILooper {
                 }
             }
 
-            updateRegisters();
-            step();
+            iLooper.updateRegisters();
+            iLooper.step();
         }
     }
 }

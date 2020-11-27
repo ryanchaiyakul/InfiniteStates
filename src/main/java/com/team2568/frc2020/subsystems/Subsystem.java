@@ -15,6 +15,8 @@ public abstract class Subsystem {
             compute();
             setOutputs();
 
+            writeDashboard();
+
             if (Registers.kTelemetry.get()) {
                 outputTelemetry();
             }
@@ -31,7 +33,7 @@ public abstract class Subsystem {
     // Read from results from compute and set motors etc.
     public abstract void setOutputs();
 
-    // Output permanent/a
+    // Output permanent statements
     public abstract void writeDashboard();
 
     // Debugging dashboard statements

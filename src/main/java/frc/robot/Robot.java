@@ -7,6 +7,10 @@
 
 package frc.robot;
 
+import com.team2568.frc2020.Registers;
+import com.team2568.frc2020.subsystems.Shooter;
+import com.team2568.frc2020.subsystems.SubsystemManager;
+
 import edu.wpi.first.wpilibj.TimedRobot;
 
 /**
@@ -17,6 +21,8 @@ import edu.wpi.first.wpilibj.TimedRobot;
  * project.
  */
 public class Robot extends TimedRobot {
+	private SubsystemManager mManager;
+	private Shooter mShooter;
 
 	/**
 	 * This function is run when the robot is first started up and should be used
@@ -24,6 +30,11 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void robotInit() {
+		mManager = SubsystemManager.getInstance();
+
+		mShooter = Shooter.getInstance();
+
+		mManager.registerSubsystem(mShooter, Registers.kShooterState);
 	}
 
 	/**
@@ -53,6 +64,8 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void autonomousInit() {
+		Registers.kTelemetry.set(false);
+		mManager.stop();
 	}
 
 	/**
@@ -67,6 +80,8 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void teleopInit() {
+		Registers.kTelemetry.set(false);
+		mManager.start();
 	}
 
 	/**
@@ -81,6 +96,8 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void disabledInit() {
+		Registers.kTelemetry.set(false);
+		mManager.stop();
 	}
 
 	/**
@@ -95,6 +112,8 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void testInit() {
+		Registers.kTelemetry.set(true);
+		mManager.start();
 	}
 
 	/**
