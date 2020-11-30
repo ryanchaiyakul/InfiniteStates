@@ -3,9 +3,12 @@ package com.team2568.frc2020.loops;
 import java.util.ArrayList;
 
 import com.team2568.frc2020.Constants;
+import com.team2568.frc2020.Registers;
 import com.team2568.frc2020.registers.UpdateRegister;
 
 import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * ILooper instances manage a list of loops that share a common period. Loops
@@ -21,6 +24,7 @@ public class ILooper {
 
 	// Notifier
 	private Notifier mNotifier;
+	private String mName;
 	private double kPeriod;
 
 	// Registered objects
@@ -32,12 +36,18 @@ public class ILooper {
 		@Override
 		public void run() {
 			if (mActive) {
+				double mStart = Timer.getFPGATimestamp();
+
 				synchronized (mLoopLock) {
 					for (Loop loop : mLoops) {
 						loop.onLoop();
 					}
 				}
 				updateRegisters();
+				
+				if (Registers.kTelemetry.get()) {
+					SmartDashboard.putNumber(mName, Timer.getFPGATimestamp() - mStart);
+				}
 			}
 		}
 	};
@@ -48,6 +58,7 @@ public class ILooper {
 
 	public ILooper(String name, double period) {
 		this.kPeriod = period;
+		this.mName = name;
 
 		this.mNotifier = new Notifier(mDefaultRunnable);
 		mNotifier.setName(name);

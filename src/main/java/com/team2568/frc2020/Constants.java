@@ -1,12 +1,15 @@
 package com.team2568.frc2020;
 
 public class Constants {
+	// Testing Constant
+	public static final boolean inSimulate = false;
+
 	// Loop Constants
 	public static final double kDefaultPeriod = 0.01;
 
 	// Controllers
-	public static final Controller kDriveController = new Controller(0);
-	public static final Controller kOperatorController = new Controller(0);
+	//public static final Controller kDriveController = new Controller(0);
+	public static final Controller kOperatorController = new Controller(1);
 
 	// CAN Ports
 	public static final int kShooterLMotor = 1;
@@ -21,7 +24,7 @@ public class Constants {
 	public static final int kPivotLimit = 1;
 	
 	// Controller Constants
-	public static final double kTriggerThreshold = 0.1;
+	public static final double kTriggerThreshold = 0.3;
 
 	// SparkMax Constants
 	public static final int kSparkCurrentLimit = 40;

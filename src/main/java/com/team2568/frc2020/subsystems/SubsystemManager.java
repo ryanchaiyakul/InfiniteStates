@@ -43,6 +43,7 @@ public class SubsystemManager {
      */
     public void registerSubsystem(Subsystem subsystem, StoppableRegister<?> stateRegister) {
         iLooper.registerLoop(subsystem.getLoop());
+        iLooper.registerRegister(stateRegister);
 
         // Register stoppable register
         if (!iLooper.isActive()) {

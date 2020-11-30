@@ -37,14 +37,16 @@ public class Shooter extends Subsystem {
     }
 
     private Shooter() {
-        lMotor = SparkMaxFactory.getDefault(Constants.kShooterLMotor);
-        SparkMaxFactory.setPIDF(lMotor, Constants.kShooterkP, Constants.kShooterkI, Constants.kShooterkD,
-                Constants.kShooterkF);
+        if (!Constants.inSimulate) {
+            lMotor = SparkMaxFactory.getDefault(Constants.kShooterLMotor);
+            SparkMaxFactory.setPIDF(lMotor, Constants.kShooterkP, Constants.kShooterkI, Constants.kShooterkD,
+                    Constants.kShooterkF);
 
-        rMotor = SparkMaxFactory.getInvertedFollower(lMotor, Constants.kShooterRMotor);
+            rMotor = SparkMaxFactory.getInvertedFollower(lMotor, Constants.kShooterRMotor);
 
-        configureMotor(lMotor);
-        configureMotor(rMotor);
+            configureMotor(lMotor);
+            configureMotor(rMotor);
+        }
 
         mLock = new DoubleSolenoid(Constants.kShooterF, Constants.kShooterR);
     }
@@ -97,10 +99,12 @@ public class Shooter extends Subsystem {
     }
 
     public void setOutputs() {
-        if (mRPM != 0) {
-            lMotor.getPIDController().setReference(mRPM, ControlType.kVelocity);
-        } else {
-            lMotor.set(0);
+        if (!Constants.inSimulate) {
+            if (mRPM != 0) {
+                lMotor.getPIDController().setReference(mRPM, ControlType.kVelocity);
+            } else {
+                lMotor.set(0);
+            }
         }
 
         if (isLocked) {
@@ -111,12 +115,14 @@ public class Shooter extends Subsystem {
     }
 
     public void writeDashboard() {
-
     }
 
     public void outputTelemetry() {
         SmartDashboard.putString("ShooterState", nState.toString());
-        SmartDashboard.putNumber("ShooterRPM", lMotor.getEncoder().getVelocity());
         SmartDashboard.putBoolean("ShooterLocked", isLocked);
+
+        if (!Constants.inSimulate) {
+            SmartDashboard.putNumber("ShooterRPM", lMotor.getEncoder().getVelocity());
+        }
     }
 }

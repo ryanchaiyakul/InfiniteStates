@@ -23,7 +23,7 @@ public class Controller extends XboxController {
     }
 
     private boolean getTrigger(Hand hand) {
-        return Constants.kTriggerThreshold < super.getTriggerAxis(hand);
+        return Constants.kTriggerThreshold <= super.getTriggerAxis(hand);
     }
 
     public boolean getLeftBumper() {
