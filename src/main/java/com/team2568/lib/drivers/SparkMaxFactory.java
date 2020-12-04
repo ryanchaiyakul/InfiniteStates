@@ -10,7 +10,15 @@ public class SparkMaxFactory {
 
     public static class Config {
         public int currentLimit = Constants.kSparkCurrentLimit;
-        public  IdleMode idleMode = IdleMode.kBrake;
+        public IdleMode idleMode = IdleMode.kBrake;
+
+        public void setCurrentLimit(int limit) {
+            currentLimit = limit;
+        }
+
+        public void setIdleMode(IdleMode idleMode) {
+            this.idleMode = idleMode;
+        }
     }
 
     public static CANSparkMax getDefault(int port, Config config) {
@@ -48,11 +56,11 @@ public class SparkMaxFactory {
         ret.follow(leader, true);
         return ret;
     }
-    
+
     public static void setPIDF(CANSparkMax motor, double kP) {
         setPIDF(motor, kP, 0);
     }
-    
+
     public static void setPIDF(CANSparkMax motor, double kP, double kI) {
         setPIDF(motor, kP, kI, 0);
     }

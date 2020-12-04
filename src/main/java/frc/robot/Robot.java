@@ -8,10 +8,16 @@
 package frc.robot;
 
 import com.team2568.frc2020.Registers;
+import com.team2568.frc2020.subsystems.Climb;
+import com.team2568.frc2020.subsystems.DriveTrain;
+import com.team2568.frc2020.subsystems.Intake;
 import com.team2568.frc2020.subsystems.Shooter;
 import com.team2568.frc2020.subsystems.SubsystemManager;
+import com.team2568.frc2020.subsystems.Tube;
 
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -22,7 +28,12 @@ import edu.wpi.first.wpilibj.TimedRobot;
  */
 public class Robot extends TimedRobot {
 	private SubsystemManager mManager;
+
 	private Shooter mShooter;
+	private Intake mIntake;
+	private Tube mTube;
+	private Climb mClimb;
+	private DriveTrain mDrive;
 
 	/**
 	 * This function is run when the robot is first started up and should be used
@@ -30,11 +41,23 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void robotInit() {
+		Registers.kSimulate.set(!RobotBase.isReal());
+
+		SmartDashboard.putBoolean("isSimulate", Registers.kSimulate.get());
+
 		mManager = SubsystemManager.getInstance();
 
 		mShooter = Shooter.getInstance();
+		mIntake = Intake.getInstance();
+		mTube = Tube.getInstance();
+		mClimb = Climb.getInstance();
+		mDrive = DriveTrain.getInstance();
 
 		mManager.registerSubsystem(mShooter, Registers.kShooterState);
+		mManager.registerSubsystem(mIntake, Registers.kIntakeState);
+		mManager.registerSubsystem(mTube, Registers.kTubeState);
+		mManager.registerSubsystem(mClimb, Registers.kClimbState);
+		mManager.registerSubsystem(mDrive, Registers.kDriveState);
 	}
 
 	/**
@@ -121,5 +144,10 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void testPeriodic() {
+	}
+
+	@Override
+	public void simulationPeriodic() {
+
 	}
 }

@@ -65,4 +65,34 @@ public class Controller extends XboxController {
     public double getRightY() {
         return getY(Hand.kRight);
     }
+
+    public double getDeadzoneX(Hand hand) {
+        if (Math.abs(getX(hand)) < Constants.kJoystickDeadzone) {
+            return 0;
+        }
+        return getX(hand);
+    }
+
+    public double getDeadzoneY(Hand hand) {
+        if (Math.abs(getY(hand)) < Constants.kJoystickDeadzone) {
+            return 0;
+        }
+        return getX(hand);
+    }
+
+    public double getLeftDeadzoneX() {
+        return getDeadzoneX(Hand.kLeft);
+    }
+
+    public double getRightDeadzoneX() {
+        return getDeadzoneX(Hand.kRight);
+    }
+
+    public double getLeftDeadzoneY() {
+        return getDeadzoneY(Hand.kLeft);
+    }
+
+    public double getRightDeadzoneY() {
+        return getDeadzoneY(Hand.kRight);
+    }
 }

@@ -25,6 +25,8 @@ public class Shooter extends Subsystem {
     private CANSparkMax lMotor, rMotor;
     private DoubleSolenoid mLock;
 
+    private SparkMaxFactory.Config mConfig = new SparkMaxFactory.Config();
+
     public static Shooter getInstance() {
         if (mInstance == null) {
             mInstance = new Shooter();
@@ -32,20 +34,15 @@ public class Shooter extends Subsystem {
         return mInstance;
     }
 
-    private void configureMotor(CANSparkMax motor) {
-        motor.setIdleMode(IdleMode.kCoast);
-    }
-
     private Shooter() {
-        if (!Constants.inSimulate) {
-            lMotor = SparkMaxFactory.getDefault(Constants.kShooterLMotor);
+        mConfig.setIdleMode(IdleMode.kCoast);
+
+        if (!Registers.kSimulate.get()) {
+            lMotor = SparkMaxFactory.getDefault(Constants.kShooterLMotor, mConfig);
             SparkMaxFactory.setPIDF(lMotor, Constants.kShooterkP, Constants.kShooterkI, Constants.kShooterkD,
                     Constants.kShooterkF);
 
-            rMotor = SparkMaxFactory.getInvertedFollower(lMotor, Constants.kShooterRMotor);
-
-            configureMotor(lMotor);
-            configureMotor(rMotor);
+            rMotor = SparkMaxFactory.getInvertedFollower(lMotor, Constants.kShooterRMotor, mConfig);
         }
 
         mLock = new DoubleSolenoid(Constants.kShooterF, Constants.kShooterR);
@@ -99,7 +96,7 @@ public class Shooter extends Subsystem {
     }
 
     public void setOutputs() {
-        if (!Constants.inSimulate) {
+        if (!Registers.kSimulate.get()) {
             if (mRPM != 0) {
                 lMotor.getPIDController().setReference(mRPM, ControlType.kVelocity);
             } else {
@@ -121,7 +118,7 @@ public class Shooter extends Subsystem {
         SmartDashboard.putString("ShooterState", nState.toString());
         SmartDashboard.putBoolean("ShooterLocked", isLocked);
 
-        if (!Constants.inSimulate) {
+        if (!Registers.kSimulate.get()) {
             SmartDashboard.putNumber("ShooterRPM", lMotor.getEncoder().getVelocity());
         }
     }
