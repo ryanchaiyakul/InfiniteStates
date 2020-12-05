@@ -32,10 +32,12 @@ public class Climb extends Subsystem {
     }
 
     private Climb() {
-        lMotor = TalonSRXFactory.getDefault(Constants.kClimbLMotor);
-        rMotor = TalonSRXFactory.getDefault(Constants.kClimbRMotor);
+        if (Registers.kSimulate.get()) {
+            lMotor = TalonSRXFactory.getDefault(Constants.kClimbLMotor);
+            rMotor = TalonSRXFactory.getDefault(Constants.kClimbRMotor);
 
-        mMotors = new SpeedControllerGroup(lMotor, rMotor);
+            mMotors = new SpeedControllerGroup(lMotor, rMotor);
+        }
 
         solenoid = new DoubleSolenoid(Constants.kClimbF, Constants.kClimbR);
 
@@ -90,11 +92,13 @@ public class Climb extends Subsystem {
             solenoid.set(Value.kReverse);
         }
 
-        // Check limits and direction before setting
-        if (lLimit.get() && joystick < 0 || uLimit.get() && joystick > 0) {
-            mMotors.set(0);
-        } else {
-            mMotors.set(joystick * Constants.kClimbSpeed);
+        if (!Registers.kSimulate.get()) {
+            // Check limits and direction before setting
+            if ((!lLimit.get() && joystick < 0) || (!uLimit.get() && joystick > 0)) {
+                mMotors.set(0);
+            } else {
+                mMotors.set(joystick * Constants.kClimbSpeed);
+            }
         }
     }
 

@@ -120,7 +120,6 @@ public class DriveTrain extends Subsystem {
     }
 
     public void setOutputs() {
-        
         // Stop the robot when joysticks are not touched
         if (lJoystick == 0 && rJoystick == 0) {
             driveL = driveR = 0;

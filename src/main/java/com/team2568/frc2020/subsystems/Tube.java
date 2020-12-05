@@ -97,7 +97,6 @@ public class Tube extends Subsystem {
                     break;
             }
         }
-
     }
 
     public void writeDashboard() {

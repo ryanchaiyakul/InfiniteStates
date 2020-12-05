@@ -72,8 +72,15 @@ public class Constants {
 	public static final double kTubeShootSpeed = 1;
 
 	// Pivot Constants
-	public static final double kPivotMin = -0.1;
-	public static final double kPivotMax = 0.25;
+	public static final double kPivotAutoMinSpeed = -0.1;
+	public static final double kPivotAutoMaxSpeed = 0.25;
+
+	public static final double kPivotZeroSpeed = 0.05;
+	public static final double kPivotTeleopSpeed = 0.25;
+
+	public static final double kPivotZeroThreshold = 5;
+	public static final double kPivotHighestThreshold = 65;
+	public static final double kPivotRevThreshold = 0.5;
 
 	public static final double kPivotkP = 0;
 	public static final double kPivotkI = 0;

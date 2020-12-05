@@ -11,6 +11,7 @@ import com.team2568.frc2020.Registers;
 import com.team2568.frc2020.subsystems.Climb;
 import com.team2568.frc2020.subsystems.DriveTrain;
 import com.team2568.frc2020.subsystems.Intake;
+import com.team2568.frc2020.subsystems.Pivot;
 import com.team2568.frc2020.subsystems.Shooter;
 import com.team2568.frc2020.subsystems.SubsystemManager;
 import com.team2568.frc2020.subsystems.Tube;
@@ -32,6 +33,7 @@ public class Robot extends TimedRobot {
 	private Shooter mShooter;
 	private Intake mIntake;
 	private Tube mTube;
+	private Pivot mPivot;
 	private Climb mClimb;
 	private DriveTrain mDrive;
 
@@ -52,12 +54,14 @@ public class Robot extends TimedRobot {
 		mTube = Tube.getInstance();
 		mClimb = Climb.getInstance();
 		mDrive = DriveTrain.getInstance();
+		mPivot = Pivot.getInstance();
 
 		mManager.registerSubsystem(mShooter, Registers.kShooterState);
 		mManager.registerSubsystem(mIntake, Registers.kIntakeState);
 		mManager.registerSubsystem(mTube, Registers.kTubeState);
 		mManager.registerSubsystem(mClimb, Registers.kClimbState);
 		mManager.registerSubsystem(mDrive, Registers.kDriveState);
+		mManager.registerSubsystem(mPivot, Registers.kPivotState);
 	}
 
 	/**
