@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 import com.team2568.frc2020.Constants;
 import com.team2568.frc2020.Registers;
+import com.team2568.frc2020.registers.ResetableRegister;
+import com.team2568.frc2020.registers.StoppableRegister;
 import com.team2568.frc2020.registers.UpdateRegister;
 
 import edu.wpi.first.wpilibj.Notifier;
@@ -11,12 +13,11 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
- * ILooper instances manage a list of loops that share a common period. Loops
- * can be added dynamically when inactive. However, loops cannot be removed.
- * Register a register to a looper if a loop here is the source (FSMs are output
- * latched).
+ * ILooper instances manage a list of runnables that share a common period.
+ * Runnables can be added dynamically when inactive. However, runnables cannot
+ * be removed. Register a register to a looper if a runnable here is the source
+ * (FSMs are output latched).
  */
-
 public class ILooper {
 	// Flags
 	private boolean mActive = false;
@@ -28,10 +29,14 @@ public class ILooper {
 	private double kPeriod;
 
 	// Registered objects
-	private ArrayList<Loop> mLoops = new ArrayList<Loop>();
-	private ArrayList<UpdateRegister<?>> mUpdateRegisters = new ArrayList<UpdateRegister<?>>();
+	private ArrayList<Runnable> mRunnables = new ArrayList<Runnable>();
 
-	// Runnable instance that executes onLoop for every loop and updates registers
+	private ArrayList<UpdateRegister<?>> mUpdateRegisters = new ArrayList<UpdateRegister<?>>();
+	private ArrayList<ResetableRegister<?>> mResetableRegisters = new ArrayList<ResetableRegister<?>>();
+	private ArrayList<StoppableRegister<?>> mStoppableRegisters = new ArrayList<StoppableRegister<?>>();
+
+	// Runnable instance that executes onRunnablefor every loop and updates
+	// registers
 	private final Runnable mDefaultRunnable = new Runnable() {
 		@Override
 		public void run() {
@@ -39,12 +44,12 @@ public class ILooper {
 				double mStart = Timer.getFPGATimestamp();
 
 				synchronized (mLoopLock) {
-					for (Loop loop : mLoops) {
-						loop.onLoop();
+					for (Runnable runnable : mRunnables) {
+						runnable.run();
 					}
 				}
 				updateRegisters();
-				
+
 				if (Registers.kTelemetry.get()) {
 					SmartDashboard.putNumber(mName, Timer.getFPGATimestamp() - mStart);
 				}
@@ -65,27 +70,59 @@ public class ILooper {
 	}
 
 	/**
-	 * Register a loop to be controlled by this looper
+	 * Register loops to be controlled by this looper
 	 * 
-	 * @param loop
+	 * @param loops
 	 */
-	public void registerLoop(Loop loop) {
+	public void registerRunnables(Runnable... runnables) {
 		if (!isActive()) {
 			synchronized (mLoopLock) {
-				mLoops.add(loop);
+				for (Runnable runnable : runnables) {
+					mRunnables.add(runnable);
+				}
 			}
 		}
 	}
 
 	/**
-	 * Register a register to be updated by this looper
+	 * Register registers to be updated by this looper
 	 * 
-	 * @param register
+	 * @param registers
 	 */
-	public void registerRegister(UpdateRegister<?> register) {
+	public void registerUpdateRegisters(UpdateRegister<?>... registers) {
 		if (!isActive()) {
-			mUpdateRegisters.add(register);
+			for (UpdateRegister<?> register : registers) {
+				mUpdateRegisters.add(register);
+			}
 		}
+	}
+
+	/**
+	 * Register registers to be reset by this looper
+	 * 
+	 * @param registers
+	 */
+	public void registerResetableRegisters(ResetableRegister<?>... registers) {
+		if (!isActive()) {
+			for (ResetableRegister<?> register : registers) {
+				mResetableRegisters.add(register);
+			}
+		}
+		registerUpdateRegisters(registers);
+	}
+
+	/**
+	 * Register registers to be stopped by this looper
+	 * 
+	 * @param registers
+	 */
+	public void registerStoppableRegisters(StoppableRegister<?>... registers) {
+		if (!isActive()) {
+			for (StoppableRegister<?> register : registers) {
+				mStoppableRegisters.add(register);
+			}
+		}
+		registerResetableRegisters(registers);
 	}
 
 	/**
@@ -93,10 +130,12 @@ public class ILooper {
 	 */
 	public void start() {
 		if (!isActive()) {
+			resetRegisters();
+			updateRegisters();
+
 			mNotifier.startPeriodic(kPeriod);
 			mActive = true;
 		}
-
 	}
 
 	/**
@@ -106,26 +145,60 @@ public class ILooper {
 		if (isActive()) {
 			mNotifier.stop();
 			mActive = false;
+
+			stopRegisters();
+			updateRegisters();
+
+			step();
+		}
+	}
+
+	/**
+	 * Stops and restarts the notifier and registers. Will just start if it is
+	 * inactive.
+	 */
+	public void reset() {
+		if (isActive()) {
+			stop();
+			start();
+		} else {
+			start();
 		}
 	}
 
 	/**
 	 * Executes update for every updatable register registered to this looper
 	 */
-	public void updateRegisters() {
+	private void updateRegisters() {
 		for (UpdateRegister<?> updateRegister : mUpdateRegisters) {
 			updateRegister.update();
 		}
 	}
 
 	/**
-	 * Executes a single cycle of the runnable. Does not update before computing
+	 * Executes reset for every resetable register registered to this looper
 	 */
-	public void step() {
-		synchronized (mLoopLock) {
-			for (Loop loop : mLoops) {
-				loop.onLoop();
-			}
+	private void resetRegisters() {
+		for (ResetableRegister<?> updateRegister : mResetableRegisters) {
+			updateRegister.reset();
+		}
+	}
+
+	/**
+	 * Executes stop for every stoppable register registered to this looper
+	 */
+	private void stopRegisters() {
+		for (StoppableRegister<?> updateRegister : mStoppableRegisters) {
+			updateRegister.stop();
+		}
+	}
+
+	/**
+	 * Execute a single compute and update cycle.
+	 */
+	private void step() {
+		for (Runnable runnable : mRunnables) {
+			runnable.run();
 		}
 
 		updateRegisters();

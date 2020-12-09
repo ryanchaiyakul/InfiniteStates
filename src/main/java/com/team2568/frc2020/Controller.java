@@ -77,7 +77,7 @@ public class Controller extends XboxController {
         if (Math.abs(getY(hand)) < Constants.kJoystickDeadzone) {
             return 0;
         }
-        return getX(hand);
+        return getY(hand);
     }
 
     public double getLeftDeadzoneX() {

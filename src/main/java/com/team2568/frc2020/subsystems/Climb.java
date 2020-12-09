@@ -3,7 +3,6 @@ package com.team2568.frc2020.subsystems;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.team2568.frc2020.Constants;
 import com.team2568.frc2020.Registers;
-import com.team2568.frc2020.states.ClimbState;
 import com.team2568.lib.drivers.TalonSRXFactory;
 
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -12,12 +11,13 @@ import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+/**
+ * The climb subsystem ruins
+ */
 public class Climb extends Subsystem {
     private static Climb mInstance;
 
-    private ClimbState nState;
-    private boolean isExtended;
-    private double joystick;
+    private double speed;
 
     private WPI_TalonSRX lMotor, rMotor;
     private SpeedControllerGroup mMotors;
@@ -32,7 +32,7 @@ public class Climb extends Subsystem {
     }
 
     private Climb() {
-        if (Registers.kSimulate.get()) {
+        if (Registers.kReal.get()) {
             lMotor = TalonSRXFactory.getDefault(Constants.kClimbLMotor);
             rMotor = TalonSRXFactory.getDefault(Constants.kClimbRMotor);
 
@@ -45,76 +45,52 @@ public class Climb extends Subsystem {
         uLimit = new DigitalInput(Constants.kClimbULimit);
     }
 
-    public void compute() {
-        nState = Registers.kClimbState.get();
-
-        switch (Registers.kClimbState.get()) {
-            case OFF:
-                isExtended = false;
-                joystick = 0;
-
-                // Screw cannot move until the climber is engaged at least once
-                if (Constants.kOperatorController.getYButtonPressed()) {
-                    nState = ClimbState.EXTENDED;
-                }
-                break;
-            case EXTENDED:
-                isExtended = true;
-                joystick = Constants.kOperatorController.getRightY();
-
-                // Y toggles mode
-                if (Constants.kOperatorController.getYButtonPressed()) {
-                    nState = ClimbState.CLOSED;
-                }
-                break;
-            case CLOSED:
-                isExtended = false;
-                joystick = Constants.kOperatorController.getRightY();
-
-                // Y toggles mode
-                if (Constants.kOperatorController.getYButtonPressed()) {
-                    nState = ClimbState.EXTENDED;
-                }
-                break;
-            case STOP:
-                // Do not change extended state because it might be climbed
-                joystick = 0;
-                break;
-        }
-
-        Registers.kClimbState.set(nState);
-    }
-
     public void setOutputs() {
-        if (isExtended) {
+        if (Registers.kClimbExtend.get()) {
             solenoid.set(Value.kForward);
         } else {
             solenoid.set(Value.kReverse);
         }
 
-        if (!Registers.kSimulate.get()) {
+        speed = applyLimit(Registers.kClimbSpeed.get()) * Constants.kClimbSpeed;
+
+        if (Registers.kReal.get()) {
             // Check limits and direction before setting
-            if ((!lLimit.get() && joystick < 0) || (!uLimit.get() && joystick > 0)) {
+            if ((!lLimit.get() && speed < 0) || (!uLimit.get() && speed > 0)) {
                 mMotors.set(0);
             } else {
-                mMotors.set(joystick * Constants.kClimbSpeed);
+                mMotors.set(speed);
             }
         }
     }
 
-    public void writeDashboard() {
+    public void writeStatus() {
 
     }
 
-    public void outputTelemetry() {
-        SmartDashboard.putString("ClimbState", nState.toString());
-        SmartDashboard.putBoolean("ClimbExtended", isExtended);
-        SmartDashboard.putBoolean("ClimbLowerLimit", lLimit.get());
-        SmartDashboard.putBoolean("ClimbUpperLimit", uLimit.get());
-
-        if (!Registers.kSimulate.get()) {
-            SmartDashboard.putNumber("ClimbLCurrent", lMotor.getStatorCurrent());
-            SmartDashboard.putNumber("ClimbRCurrent", rMotor.getStatorCurrent());
+    private double getLCurrent() {
+        if (Registers.kReal.get()) {
+            return lMotor.getStatorCurrent();
+        } else {
+            return 0;
         }
+    }
+
+    private double getRCurrent() {
+        if (Registers.kReal.get()) {
+            return rMotor.getStatorCurrent();
+        } else {
+            return 0;
+        }
+    }
+
+    public void writeDashboard() {
+        SmartDashboard.putNumber("ClimbLCurrent", getLCurrent());
+        SmartDashboard.putNumber("ClimbRCurrent", getRCurrent());
+    }
+
+    public void outputTelemetry() {
+        SmartDashboard.putBoolean("ClimbExtended", Registers.kClimbExtend.get());
+        SmartDashboard.putNumber("ClimbSpeed", speed);
     }
 }

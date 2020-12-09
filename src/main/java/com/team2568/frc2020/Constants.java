@@ -1,7 +1,7 @@
 package com.team2568.frc2020;
 
 public class Constants {
-	// Loop Constants
+	// RunnableConstants
 	public static final double kDefaultPeriod = 0.01;
 
 	// Controllers
@@ -9,6 +9,9 @@ public class Constants {
 	public static final Controller kOperatorController = new Controller(1);
 
 	// CAN Ports
+
+	// https://docs.google.com/spreadsheets/d/1xZ8lbKK4TP_i9pDaXgZNcLdZUCCJ9CWRHAVqdm4gPFw/edit?usp=sharing
+
 	public static final int kShooterLMotor = 1;
 	public static final int kShooterRMotor = 2;
 
@@ -56,7 +59,7 @@ public class Constants {
 
 	// Shooter Constants
 	public static final double kShooterRPM = 4500;
-	public static final double kTurnRPM = 500;
+	public static final double kShooterTurnSpeed = 500;
 	public static final double kShooterSpinTime = 0.7;
 
 	public static final double kShooterkP = 0.3;
@@ -78,9 +81,14 @@ public class Constants {
 	public static final double kPivotZeroSpeed = 0.05;
 	public static final double kPivotTeleopSpeed = 0.25;
 
-	public static final double kPivotZeroThreshold = 5;
+	public static final double kPivotZeroThreshold = 3;
 	public static final double kPivotHighestThreshold = 65;
-	public static final double kPivotRevThreshold = 0.5;
+	public static final double kPivotTargetRevThreshold = 0.5;
+
+	public static final double kPivotTrench = 3.8;
+	public static final double kPivotLine = 16.35;
+	public static final double kPivotAgainst = 79;
+	public static final double kPivotWheel = 33;
 
 	public static final double kPivotkP = 0;
 	public static final double kPivotkI = 0;

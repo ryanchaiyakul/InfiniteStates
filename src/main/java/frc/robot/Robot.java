@@ -7,14 +7,18 @@
 
 package frc.robot;
 
+import java.util.ArrayList;
+
 import com.team2568.frc2020.Registers;
-import com.team2568.frc2020.subsystems.Climb;
-import com.team2568.frc2020.subsystems.DriveTrain;
-import com.team2568.frc2020.subsystems.Intake;
-import com.team2568.frc2020.subsystems.Pivot;
-import com.team2568.frc2020.subsystems.Shooter;
-import com.team2568.frc2020.subsystems.SubsystemManager;
-import com.team2568.frc2020.subsystems.Tube;
+import com.team2568.frc2020.commands.Command;
+import com.team2568.frc2020.commands.Compare;
+import com.team2568.frc2020.commands.JumpIfEqual;
+import com.team2568.frc2020.commands.NOOP;
+import com.team2568.frc2020.commands.Processor;
+import com.team2568.frc2020.commands.Set;
+import com.team2568.frc2020.fsm.teleop.TeleopLooper;
+import com.team2568.frc2020.loops.ILooper;
+import com.team2568.frc2020.subsystems.SubsystemLooper;
 
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -28,14 +32,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * project.
  */
 public class Robot extends TimedRobot {
-	private SubsystemManager mManager;
-
-	private Shooter mShooter;
-	private Intake mIntake;
-	private Tube mTube;
-	private Pivot mPivot;
-	private Climb mClimb;
-	private DriveTrain mDrive;
+	private ILooper teleopLooper, subsystemLooper;
+	private Processor processor;
 
 	/**
 	 * This function is run when the robot is first started up and should be used
@@ -43,25 +41,36 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void robotInit() {
-		Registers.kSimulate.set(!RobotBase.isReal());
+		Registers.kReal.set(RobotBase.isReal());
+		// Registers.kReal.set(true);
+		SmartDashboard.putBoolean("isReal", Registers.kReal.get());
 
-		SmartDashboard.putBoolean("isSimulate", Registers.kSimulate.get());
+		if (!Registers.kReal.get()) {
+			Registers.kTelemetry.set(true);
+		} else {
+			Registers.kTelemetry.set(false);
+		}
 
-		mManager = SubsystemManager.getInstance();
+		subsystemLooper = SubsystemLooper.getInstance();
+		teleopLooper = TeleopLooper.getInstance();
+		processor = Processor.getInstance();
 
-		mShooter = Shooter.getInstance();
-		mIntake = Intake.getInstance();
-		mTube = Tube.getInstance();
-		mClimb = Climb.getInstance();
-		mDrive = DriveTrain.getInstance();
-		mPivot = Pivot.getInstance();
+		ArrayList<Command> commandList = new ArrayList<>();
 
-		mManager.registerSubsystem(mShooter, Registers.kShooterState);
-		mManager.registerSubsystem(mIntake, Registers.kIntakeState);
-		mManager.registerSubsystem(mTube, Registers.kTubeState);
-		mManager.registerSubsystem(mClimb, Registers.kClimbState);
-		mManager.registerSubsystem(mDrive, Registers.kDriveState);
-		mManager.registerSubsystem(mPivot, Registers.kPivotState);
+		commandList.add(new Set<Double>(Registers.kDriveL, 1.0));
+		commandList.add(new Set<Double>(Registers.kDriveR, 0.5));
+		for (int i = 0; i < 100; i++) {
+			commandList.add(new NOOP());
+		}
+		commandList.add(new Set<Double>(Registers.kDriveL, 0.5));
+		commandList.add(new Set<Double>(Registers.kDriveR, 1.0));
+		for (int i = 0; i < 100; i++) {
+			commandList.add(new NOOP());
+		}
+		commandList.add(new JumpIfEqual(new Compare<Boolean>(Registers.kTelemetry, true), 0));
+		commandList.add(new NOOP());
+
+		processor.loadProgram(commandList);
 	}
 
 	/**
@@ -91,8 +100,9 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void autonomousInit() {
-		Registers.kTelemetry.set(false);
-		mManager.stop();
+		subsystemLooper.reset();
+		teleopLooper.stop();
+		processor.start();
 	}
 
 	/**
@@ -107,8 +117,9 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void teleopInit() {
-		Registers.kTelemetry.set(false);
-		mManager.start();
+		subsystemLooper.reset();
+		teleopLooper.start();
+		processor.stop();
 	}
 
 	/**
@@ -123,8 +134,9 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void disabledInit() {
-		Registers.kTelemetry.set(false);
-		mManager.stop();
+		subsystemLooper.stop();
+		teleopLooper.stop();
+		processor.stop();
 	}
 
 	/**
@@ -139,8 +151,9 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void testInit() {
-		Registers.kTelemetry.set(true);
-		mManager.start();
+		subsystemLooper.reset();
+		teleopLooper.stop();
+		processor.stop();
 	}
 
 	/**
@@ -148,10 +161,5 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void testPeriodic() {
-	}
-
-	@Override
-	public void simulationPeriodic() {
-
 	}
 }

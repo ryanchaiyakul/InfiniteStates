@@ -3,7 +3,6 @@ package com.team2568.frc2020.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.team2568.frc2020.Constants;
 import com.team2568.frc2020.Registers;
-import com.team2568.frc2020.states.DriveState;
 import com.team2568.lib.drivers.SparkMaxFactory;
 
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
@@ -13,18 +12,16 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class DriveTrain extends Subsystem {
     private static DriveTrain mInstance;
 
-    private DriveState nState;
-
-    private double lJoystick, rJoystick;
-    private double drivePower;
-
-    private int constL, constR;
-    private double driveL, driveR;
+    private double driveL, driveR, driveF, driveZ;
 
     private CANSparkMax laMotor, lbMotor, lcMotor, raMotor, rbMotor, rcMotor;
     private SpeedControllerGroup lGroup, rGroup;
 
     private DifferentialDrive drive;
+
+    public static enum DriveMode {
+        kTank, kArcade, kOff;
+    }
 
     public static DriveTrain getInstance() {
         if (mInstance == null) {
@@ -34,7 +31,7 @@ public class DriveTrain extends Subsystem {
     }
 
     private DriveTrain() {
-        if (!Registers.kSimulate.get()) {
+        if (Registers.kReal.get()) {
             laMotor = SparkMaxFactory.getDefault(Constants.kDriveTrainLAMotor);
             lbMotor = SparkMaxFactory.getDefault(Constants.kDriveTrainLBMotor);
             lcMotor = SparkMaxFactory.getDefault(Constants.kDriveTrainLCMotor);
@@ -51,102 +48,44 @@ public class DriveTrain extends Subsystem {
         }
     }
 
-    public void compute() {
-        nState = Registers.kDriveState.get();
-
-        switch (Registers.kDriveState.get()) {
-            case STANDARD:
-                lJoystick = Constants.kDriveController.getLeftY();
-                rJoystick = Constants.kDriveController.getRightY();
-
-                // A will invert the controls
-                if (Constants.kDriveController.getAButtonPressed()) {
-                    nState = DriveState.INVERTED;
-                }
-
-                setDrivePower();
-                setDirection();
-                break;
-            case INVERTED:
-                // Has to be flipped both in polarity and sign
-                lJoystick = -Constants.kDriveController.getRightY();
-                rJoystick = -Constants.kDriveController.getLeftY();
-
-                // A will invert the controls
-                if (Constants.kDriveController.getAButtonPressed()) {
-                    nState = DriveState.STANDARD;
-                }
-
-                setDrivePower();
-                setDirection();
-                break;
-            case STOP:
-                lJoystick = 0;
-                rJoystick = 0;
-                break;
-        }
-
-        Registers.kDriveState.set(nState);
-    }
-
-    private void setDrivePower() {
-        // LB/RB can change the drivePower during the match
-        drivePower = Constants.kDriveRegularPower;
-        if (Constants.kDriveController.getLeftBumper()) {
-            drivePower = Constants.kDriveSlowPower;
-        } else if (Constants.kDriveController.getRightBumper()) {
-            drivePower = Constants.kDriveTurboPower;
-        }
-    }
-
-    private void setDirection() {
-        // Easily inverted if wired strangely
-        constL = 1;
-        constR = 1;
-
-        // Use a constant multiplier for +/- direction as the driveExponent could be
-        // even and negate the sign
-        if (rJoystick < 0) {
-            constR *= 1;
-        } else if (rJoystick > 0) {
-            constR *= -1;
-        }
-
-        if (lJoystick < 0) {
-            constL *= 1;
-        } else if (lJoystick > 0) {
-            constL *= -1;
-        }
-    }
-
     public void setOutputs() {
-        // Stop the robot when joysticks are not touched
-        if (lJoystick == 0 && rJoystick == 0) {
-            driveL = driveR = 0;
-        } else {
-            // However driveExponent should be constant (Changeable by SmartDashboard)
-            double driveExponent = SmartDashboard.getNumber("Drive Exponent", 1.8);
+        reset();
 
-            // Use an exponential curve to provide fine control at low speeds but with a
-            // high maximum speed
-            driveL = constL * drivePower * Math.pow(Math.abs(lJoystick), driveExponent);
-            driveR = constR * drivePower * Math.pow(Math.abs(rJoystick), driveExponent);
-        }
+        driveL = applyLimit(Registers.kDriveL.get());
+        driveR = applyLimit(Registers.kDriveR.get());
+        driveF = applyLimit(Registers.kDriveF.get());
+        driveZ = applyLimit(Registers.kDriveZ.get());
 
-        if (!Registers.kSimulate.get()) {
-            // Invert is handled by compute()
-            drive.tankDrive(driveL, driveR);
+        if (Registers.kReal.get()) {
+            switch (Registers.kDriveMode.get()) {
+                case kTank:
+                    drive.tankDrive(driveL, driveR);
+                    break;
+                case kArcade:
+                    drive.arcadeDrive(driveF, driveZ);
+                    break;
+                case kOff:
+                    drive.tankDrive(0, 0);
+            }
         }
+    }
+
+    public void writeStatus() {
+
+    }
+
+    private void reset() {
+        driveL = driveR = driveF = driveZ = 0;
     }
 
     public void writeDashboard() {
-
     }
 
     public void outputTelemetry() {
-        SmartDashboard.putString("DriveState", nState.toString());
-
-        SmartDashboard.putNumber("LeftSpeed", driveL);
-        SmartDashboard.putNumber("RightSpeed", driveR);
+        SmartDashboard.putString("DriveMode", Registers.kDriveMode.get().toString());
+        SmartDashboard.putNumber("DriveL", driveL);
+        SmartDashboard.putNumber("DriveR", driveR);
+        SmartDashboard.putNumber("DriveF", driveF);
+        SmartDashboard.putNumber("DriveZ", driveZ);
     }
 }

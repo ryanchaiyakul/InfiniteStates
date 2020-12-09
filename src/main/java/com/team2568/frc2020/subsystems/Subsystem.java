@@ -1,7 +1,6 @@
 package com.team2568.frc2020.subsystems;
 
 import com.team2568.frc2020.Registers;
-import com.team2568.frc2020.loops.Loop;
 
 /**
  * Subsystems should have one instance and be registered to the SubsystemManager
@@ -9,34 +8,57 @@ import com.team2568.frc2020.loops.Loop;
  * avoid glitches during computation.
  */
 public abstract class Subsystem {
-    private final Loop mLoop = new Loop() {
+    private final Runnable mRunnable = new Runnable() {
         @Override
-        public void onLoop() {
-            compute();
+        public void run() {
             setOutputs();
-
+            writeStatus();
             writeDashboard();
 
             if (Registers.kTelemetry.get()) {
                 outputTelemetry();
             }
         }
+
     };
 
-    public Loop getLoop() {
-        return mLoop;
+    /**
+     * Get private Runnable variable from this subsystem
+     */
+    public Runnable getRunnable() {
+        return mRunnable;
     }
 
-    // Compute next state and local values
-    public abstract void compute();
+    /**
+     * Helper function to limit speed inputs from [-1, 1]
+     */
+    public double applyLimit(double speed) {
+        if (speed > 1) {
+            return 1;
+        } else if (speed < -1) {
+            return -1;
+        }
+        return speed;
+    }
 
-    // Read from results from compute and set motors etc.
+    /**
+     * Read from results from registers and set motors etc.
+     */
     public abstract void setOutputs();
 
-    // Output permanent statements
+    /**
+     * Write to status registers
+     */
+    public abstract void writeStatus();
+
+    /**
+     * Output permanent statements
+     */
     public abstract void writeDashboard();
 
-    // Debugging dashboard statements
+    /**
+     * Debugging dashboard statements
+     */
     public abstract void outputTelemetry();
 
 }
