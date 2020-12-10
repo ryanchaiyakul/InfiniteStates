@@ -6,6 +6,8 @@ import com.team2568.frc2020.Registers;
  * Subsystems should have one instance and be registered to the SubsystemManager
  * instance. Outputs (Motors) should not be set until the setOutput call to
  * avoid glitches during computation.
+ * 
+ * @author Ryan Chaiyakul
  */
 public abstract class Subsystem {
     private final Runnable mRunnable = new Runnable() {

@@ -9,10 +9,39 @@ import com.team2568.lib.drivers.SparkMaxFactory;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+/**
+ * <p>
+ * A single motor controls the pivot subsystem. The revolutions of this motor is
+ * bound by a lower limit switch and a max revolution count relative to the
+ * limit switch.
+ * </p>
+ * 
+ * <p>
+ * PivotMode: kAuto, kTeleop, kOff
+ * </p>
+ * 
+ * <p>
+ * Will read PivotTargetRev in kAuto and PivotSpeed in kTeleop.
+ * </p>
+ * 
+ * <p>
+ * PivotTargetRev: [0, 65]
+ * </p>
+ * 
+ * <p>
+ * If a revolution value less than 3 is passed, the pivot will zero.
+ * </p>
+ * 
+ * <p>
+ * PivotSpeed: [-1, 1]
+ * </p>
+ * 
+ * @author Ryan Chaiyakul
+ */
 public class Pivot extends Subsystem {
     private static Pivot mInstance;
 
-    private double speed;
+    private double speed, refrence;
 
     private CANSparkMax motor;
     private DigitalInput lowerLimit;
@@ -40,45 +69,32 @@ public class Pivot extends Subsystem {
     }
 
     public void setOutputs() {
+        // Reset private variables
+        speed = 0;
+
         switch (Registers.kPivotMode.get()) {
             case kAuto:
                 goToRev(Registers.kPivotTargetRev.get());
                 break;
             case kTeleop:
-                double rawSpeed = applyLimit(Registers.kPivotSpeed.get());
-
-                // Reset encoder and stop if lowerLimit reached
-                if (rawSpeed < 0 && !lowerLimit.get()) {
-                    callibrate();
-                } else {
-                    // Determine what speed constant to multiply
-                    if (rawSpeed < 0 && getRev() < Constants.kPivotZeroThreshold) {
-                        speed = -rawSpeed * Constants.kPivotZeroSpeed;
-                    } else {
-                        speed = -rawSpeed * Constants.kPivotTeleopSpeed;
-                    }
-
-                    if (Registers.kReal.get()) {
-                        motor.set(speed);
-                    }
-                }
+                teleopRun();
                 break;
             case kOff:
-                if (Registers.kReal.get()) {
-                    motor.set(0);
-                }
+                stop();
                 break;
         }
     }
 
-    public void writeStatus() {
-        Registers.kPivotRev.set(getRev());
-    }
-
+    /**
+     * Bounds the passed revolution to the range [3, 65] and sets the PID controller
+     * to this value
+     * 
+     * @param rev
+     */
     private void goToRev(double rev) {
         // Cannot use PID to go to a revolution below the zeroing value or above the max
         // value
-        double refrence = rev;
+        refrence = rev;
 
         if (rev < Constants.kPivotZeroThreshold) {
             refrence = Constants.kPivotZeroThreshold;
@@ -88,7 +104,7 @@ public class Pivot extends Subsystem {
 
         if (Registers.kReal.get()) {
             // If revolution requested is less than zeroing value, zeroing will occur
-            // referene will be set to the Zero Threshold if the requested rev is lower
+            // referene will be set to the zero threshold if the requested rev is lower
             if (atRev(Constants.kPivotZeroThreshold) && rev < Constants.kPivotZeroThreshold) {
                 zero();
             } else {
@@ -97,6 +113,33 @@ public class Pivot extends Subsystem {
         }
     }
 
+    /**
+     * Gets speed from PivotSpeed and calculates actual speed depending on distance
+     * from zero point
+     */
+    private void teleopRun() {
+        double rawSpeed = applyLimit(Registers.kPivotSpeed.get());
+
+        // Reset encoder and stop if lowerLimit reached
+        if (rawSpeed < 0 && !lowerLimit.get()) {
+            callibrate();
+        } else {
+            // Determine what speed constant to multiply
+            if (rawSpeed < 0 && getRev() < Constants.kPivotZeroThreshold) {
+                speed = -rawSpeed * Constants.kPivotZeroSpeed;
+            } else {
+                speed = -rawSpeed * Constants.kPivotTeleopSpeed;
+            }
+
+            if (Registers.kReal.get()) {
+                motor.set(speed);
+            }
+        }
+    }
+
+    /**
+     * Moves at the fastest zeroing speed that is safe until the lowerLimit is hit
+     */
     private void zero() {
         if (Registers.kReal.get()) {
             if (!lowerLimit.get()) {
@@ -107,24 +150,51 @@ public class Pivot extends Subsystem {
         }
     }
 
+    /**
+     * Stops the motor and resets the encoder
+     */
     private void callibrate() {
         if (Registers.kReal.get()) {
             motor.getEncoder().setPosition(0);
+            stop();
+        }
+    }
+
+    /**
+     * Stops the motor if the robot is not in simulation
+     */
+    private void stop() {
+        if (Registers.kReal.get()) {
             motor.set(0);
         }
     }
 
+    /**
+     * Returns whether the current revolution is within a threshold around the
+     * passed revolution.
+     * 
+     * @param rev
+     * @return
+     */
     private boolean atRev(double rev) {
         return Math.abs(rev - getRev()) < Constants.kPivotTargetRevThreshold;
     }
 
+    /**
+     * Gets the current revolution if not in simulation
+     * 
+     * @return
+     */
     private double getRev() {
         if (Registers.kReal.get()) {
             return -motor.getEncoder().getPosition();
         } else {
             return 0;
         }
+    }
 
+    public void writeStatus() {
+        Registers.kPivotRev.set(getRev());
     }
 
     public void writeDashboard() {
@@ -134,5 +204,6 @@ public class Pivot extends Subsystem {
     public void outputTelemetry() {
         SmartDashboard.putBoolean("PivotLimit", lowerLimit.get());
         SmartDashboard.putNumber("PivotSpeed", speed);
+        SmartDashboard.putNumber("PivotTargetRev", refrence);
     }
 }

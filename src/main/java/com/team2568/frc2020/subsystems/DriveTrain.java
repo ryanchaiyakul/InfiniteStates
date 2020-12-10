@@ -9,6 +9,43 @@ import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+/**
+ * <p>
+ * Six motors with three on each side of the robot chassis are linked as two
+ * speed controller groups for each side. This robot uses DifferentialDrive
+ * which allows two driving modes: TankDrive and ArcadeDrive.
+ * </p>
+ * 
+ * <p>
+ * DriveMode: kTank, kArcade, kOff
+ * </p>
+ * 
+ * <p>
+ * TankDrive
+ * </p>
+ * 
+ * <p>
+ * DriveL: [-1, 1]
+ * </p>
+ * 
+ * <p>
+ * DriveR: [-1, 1]
+ * </p>
+ * 
+ * <p>
+ * Arcade Drive
+ * </p>
+ * 
+ * <p>
+ * DriveF: [-1, 1]
+ * </p>
+ * 
+ * <p>
+ * DriveZ: [-1, 1]
+ * </p>
+ * 
+ * @author Ryan Chaiyakul
+ */
 public class DriveTrain extends Subsystem {
     private static DriveTrain mInstance;
 
@@ -66,16 +103,16 @@ public class DriveTrain extends Subsystem {
                     break;
                 case kOff:
                     drive.tankDrive(0, 0);
+                    break;
             }
         }
     }
 
-    public void writeStatus() {
-
-    }
-
     private void reset() {
         driveL = driveR = driveF = driveZ = 0;
+    }
+
+    public void writeStatus() {
     }
 
     public void writeDashboard() {

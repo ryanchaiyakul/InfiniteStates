@@ -9,9 +9,28 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+/**
+ * <p>
+ * Two motors that work inverted spin a rod of wheels that feed the balls into
+ * the tube. The rod is attached to pneumatic pistons which lower or raise the
+ * rod to stay within the bounds of the robot.
+ * </p>
+ * 
+ * <p>
+ * IntakeValue: kForward, kReverse, kOff
+ * </p>
+ * 
+ * <p>
+ * IntakeDown: True/False
+ * </p>
+ * 
+ * @author Ryan Chaiyakul
+ */
 public class Intake extends Subsystem {
     private static Intake mInstance;
 
+    // rMotor is a follower so it will not be set explicitly
+    @SuppressWarnings("unused")
     private CANSparkMax lMotor, rMotor;
     private DoubleSolenoid solenoid;
 

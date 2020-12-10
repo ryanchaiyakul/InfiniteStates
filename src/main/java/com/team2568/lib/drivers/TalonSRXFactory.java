@@ -4,6 +4,9 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.team2568.frc2020.Constants;
 
+/**
+ * Get TalonSRXs from this factory without having to do a lot of configuration.
+ */
 public class TalonSRXFactory {
     public static class Config {
         public int currentLimit = Constants.kTalonSRXCurrentLimit;

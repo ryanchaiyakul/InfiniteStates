@@ -1,9 +1,7 @@
-package com.team2568.frc2020.loops;
+package com.team2568.frc2020;
 
 import java.util.ArrayList;
 
-import com.team2568.frc2020.Constants;
-import com.team2568.frc2020.Registers;
 import com.team2568.frc2020.registers.ResetableRegister;
 import com.team2568.frc2020.registers.StoppableRegister;
 import com.team2568.frc2020.registers.UpdateRegister;
@@ -17,6 +15,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * Runnables can be added dynamically when inactive. However, runnables cannot
  * be removed. Register a register to a looper if a runnable here is the source
  * (FSMs are output latched).
+ * 
+ * @author Ryan Chaiyakul
  */
 public class ILooper {
 	// Flags

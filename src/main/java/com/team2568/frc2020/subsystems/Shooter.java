@@ -11,9 +11,36 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+/**
+ * <p>
+ * Two motors that work inverted are accelerated and held at a constant RPM.
+ * Once the RPM is stabilized, the lock is openned so that the tube mechanism
+ * can push the balls into the fly wheels.
+ * </p>
+ * 
+ * <p>
+ * ShooterRPM: kOff, kShoot, kTurn
+ * </p>
+ * 
+ * <p>
+ * kShoot will set the motors to a constant RPM
+ * </p>
+ * 
+ * <p>
+ * kTurn will set the motors to a constant speed (duty cycle)
+ * </p>
+ * 
+ * <p>
+ * ShooterClosed: True, False
+ * </p>
+ * 
+ * @author Ryan Chaiyakul
+ */
 public class Shooter extends Subsystem {
     private static Shooter mInstance;
 
+    // rMotor is a follower so it will not be set explicitly
+    @SuppressWarnings("unused")
     private CANSparkMax lMotor, rMotor;
     private DoubleSolenoid mLock;
 
@@ -52,8 +79,10 @@ public class Shooter extends Subsystem {
                     break;
                 case kShoot:
                     lMotor.getPIDController().setReference(Constants.kShooterRPM, ControlType.kVelocity);
+                    break;
                 case kTurn:
                     lMotor.set(Constants.kShooterTurnSpeed);
+                    break;
             }
         }
 

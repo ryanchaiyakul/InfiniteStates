@@ -17,7 +17,7 @@ import com.team2568.frc2020.commands.NOOP;
 import com.team2568.frc2020.commands.Processor;
 import com.team2568.frc2020.commands.Set;
 import com.team2568.frc2020.fsm.teleop.TeleopLooper;
-import com.team2568.frc2020.loops.ILooper;
+import com.team2568.frc2020.ILooper;
 import com.team2568.frc2020.subsystems.SubsystemLooper;
 
 import edu.wpi.first.wpilibj.RobotBase;

@@ -82,7 +82,7 @@ public class Constants {
 	public static final double kPivotTeleopSpeed = 0.25;
 
 	public static final double kPivotZeroThreshold = 3;
-	public static final double kPivotHighestThreshold = 65;
+	public static final double kPivotHighestThreshold = 80;
 	public static final double kPivotTargetRevThreshold = 0.5;
 
 	public static final double kPivotTrench = 3.8;

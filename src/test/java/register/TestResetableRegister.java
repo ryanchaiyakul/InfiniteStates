@@ -39,6 +39,8 @@ public class TestResetableRegister {
         _sysClkTick(1);
     }
 
+    // Only for debugging
+    @SuppressWarnings("unused")
     // debug dump register value
     private void _debug() {
         System.out.printf("------------------\n");

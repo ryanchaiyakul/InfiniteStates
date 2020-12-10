@@ -1,8 +1,11 @@
 package com.team2568.frc2020.subsystems;
 
 import com.team2568.frc2020.Registers;
-import com.team2568.frc2020.loops.ILooper;
+import com.team2568.frc2020.ILooper;
 
+/**
+ * Looper which executes the subsystem runnables and updates status registers
+ */
 public class SubsystemLooper extends ILooper {
     private static SubsystemLooper mLooper;
 

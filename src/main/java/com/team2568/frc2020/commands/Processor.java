@@ -3,7 +3,7 @@ package com.team2568.frc2020.commands;
 import java.util.ArrayList;
 
 import com.team2568.frc2020.Registers;
-import com.team2568.frc2020.loops.ILooper;
+import com.team2568.frc2020.ILooper;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 

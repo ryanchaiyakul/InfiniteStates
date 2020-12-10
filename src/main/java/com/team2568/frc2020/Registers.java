@@ -15,6 +15,10 @@ import com.team2568.frc2020.subsystems.Pivot.PivotMode;
 import com.team2568.frc2020.subsystems.Shooter.ShooterValue;
 import com.team2568.frc2020.subsystems.Tube.TubeValue;;
 
+/**
+ * Declare global registers within this class as final constants. This class may
+ * be generated later.
+ */
 public class Registers {
 	// Global Registers
 
@@ -82,28 +86,3 @@ public class Registers {
 
 	public static final UpdateRegister<Double> kPivotRev = new UpdateRegister<Double>();
 }
-
-/**
- * registers = Collections.unmodifiableList(Arrays.asList(new
- * SetOnceRegister<Boolean>(), new SetOnceRegister<Boolean>(), new
- * StoppableRegister<ShooterState>(ShooterState.OFF, ShooterState.STOP), new
- * StoppableRegister<IntakeState>(IntakeState.UP, IntakeState.STOP), new
- * StoppableRegister<TubeState>(TubeState.OFF, TubeState.STOP), new
- * StoppableRegister<PivotState>(PivotState.TELEOP, PivotState.STOP), new
- * StoppableRegister<ClimbState>(ClimbState.OFF, ClimbState.STOP), new
- * StoppableRegister<DriveState>(DriveState.STANDARD, DriveState.STOP), new
- * StoppableRegister<ShooterValue>(ShooterValue.kOff, ShooterValue.kOff), new
- * StoppableRegister<Boolean>(true, true), new StoppableRegister<Boolean>(false,
- * false), new StoppableRegister<IntakeValue>(IntakeValue.kOff,
- * IntakeValue.kOff), new StoppableRegister<TubeValue>(TubeValue.kOff,
- * TubeValue.kOff), new StoppableRegister<PivotMode>(PivotMode.kOff,
- * PivotMode.kOff), new StoppableRegister<Double>(0.0, 0.0), new
- * StoppableRegister<Double>(0.0, 0.0), new StoppableRegister<Boolean>(false,
- * false), new StoppableRegister<Double>(0.0, 0.0), new
- * StoppableRegister<DriveMode>(DriveMode.kOff, DriveMode.kOff), new
- * StoppableRegister<Double>(0.0, 0.0), new StoppableRegister<Double>(0.0, 0.0),
- * new StoppableRegister<Double>(0.0, 0.0), new StoppableRegister<Double>(0.0,
- * 0.0),
- * 
- * ));
- */

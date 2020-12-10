@@ -7,9 +7,27 @@ import com.team2568.lib.drivers.SparkMaxFactory;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+/**
+ * <p>
+ * Two motors that work inverted to each other turn two elastic tubings that
+ * compresses and pushes the balls into the shooting lock.
+ * </p>
+ * 
+ * <p>
+ * TubeValue: kOff, kIntake, kShoot, kReverse
+ * </p>
+ * 
+ * <p>
+ * KIntake is slower than kShoot
+ * </p>
+ * 
+ * @author Ryan Chaiyakul
+ */
 public class Tube extends Subsystem {
     private static Tube mInstance;
 
+    // rMotor is a follower so it will not be set explicitly
+    @SuppressWarnings("unused")
     private CANSparkMax lMotor, rMotor;
 
     public enum TubeValue {
@@ -50,11 +68,9 @@ public class Tube extends Subsystem {
     }
 
     public void writeStatus() {
-
     }
 
     public void writeDashboard() {
-
     }
 
     public void outputTelemetry() {

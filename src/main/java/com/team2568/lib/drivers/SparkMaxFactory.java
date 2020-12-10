@@ -6,6 +6,10 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.team2568.frc2020.Constants;
 
+/**
+ * Get CANSparkMaxes from this factory without having to do a lot of
+ * configuration.
+ */
 public class SparkMaxFactory {
 
     public static class Config {
@@ -57,18 +61,48 @@ public class SparkMaxFactory {
         return ret;
     }
 
+    /**
+     * Set P constants of PID Controller
+     * 
+     * @param motor
+     * @param kP
+     */
     public static void setPIDF(CANSparkMax motor, double kP) {
         setPIDF(motor, kP, 0);
     }
 
+    /**
+     * Set PI constants of PID Controller
+     * 
+     * @param motor
+     * @param kP
+     * @param kI
+     */
     public static void setPIDF(CANSparkMax motor, double kP, double kI) {
         setPIDF(motor, kP, kI, 0);
     }
 
+    /**
+     * Set PID constants of PID Controller
+     * 
+     * @param motor
+     * @param kP
+     * @param kI
+     * @param kD
+     */
     public static void setPIDF(CANSparkMax motor, double kP, double kI, double kD) {
         setPIDF(motor, kP, kI, kD, 0);
     }
 
+    /**
+     * Set PIDF constants of PID Controller
+     * 
+     * @param motor
+     * @param kP
+     * @param kI
+     * @param kD
+     * @param kF
+     */
     public static void setPIDF(CANSparkMax motor, double kP, double kI, double kD, double kF) {
         CANPIDController pidController = motor.getPIDController();
         pidController.setP(kP);
@@ -77,6 +111,13 @@ public class SparkMaxFactory {
         pidController.setFF(kF);
     }
 
+    /**
+     * Set max and min of PID Controller
+     * 
+     * @param motor
+     * @param min
+     * @param max
+     */
     public static void setOutput(CANSparkMax motor, double min, double max) {
         CANPIDController pidController = motor.getPIDController();
         pidController.setOutputRange(min, max);

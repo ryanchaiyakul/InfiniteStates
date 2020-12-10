@@ -12,7 +12,21 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
- * The climb subsystem ruins
+ * <p>
+ * Two motors that work in unison move the screw mechanism up and down to raise
+ * the robot off the group. This screw is stowed in the horizontal position
+ * during normal operations and is raised by a pneumatic piston.
+ * </p>
+ * 
+ * <p>
+ * ClimbExtend: True/False
+ * </p>
+ * 
+ * <p>
+ * ClimbSpeed: [-1, 1]
+ * </p>
+ * 
+ * @author Ryan Chaiyakul
  */
 public class Climb extends Subsystem {
     private static Climb mInstance;
@@ -64,10 +78,6 @@ public class Climb extends Subsystem {
         }
     }
 
-    public void writeStatus() {
-
-    }
-
     private double getLCurrent() {
         if (Registers.kReal.get()) {
             return lMotor.getStatorCurrent();
@@ -82,6 +92,10 @@ public class Climb extends Subsystem {
         } else {
             return 0;
         }
+    }
+
+    public void writeStatus() {
+
     }
 
     public void writeDashboard() {
