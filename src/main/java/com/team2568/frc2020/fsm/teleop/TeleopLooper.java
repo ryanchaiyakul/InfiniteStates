@@ -4,7 +4,8 @@ import com.team2568.frc2020.Registers;
 import com.team2568.frc2020.ILooper;
 
 /**
- * Executes the runnables of all teleop FSMs and updates all output and state registers
+ * Executes the runnables of all teleop FSMs and updates all output and state
+ * registers
  */
 public class TeleopLooper extends ILooper {
     private static TeleopLooper mLooper;

@@ -10,6 +10,11 @@ import com.team2568.frc2020.subsystems.Shooter.ShooterValue;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+/**
+ * RT starts the shooting macro.
+ * 
+ * @author Ryan Chaiyakul
+ */
 public class Shooter extends FSM {
     private static Shooter mInstance;
 

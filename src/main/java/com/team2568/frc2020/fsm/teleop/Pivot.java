@@ -8,6 +8,12 @@ import com.team2568.frc2020.subsystems.Pivot.PivotMode;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+/**
+ * The left Y axis controls the pivot speed. The D pad has macros which are set
+ * to different heights for shooting.
+ * 
+ * @author Ryan Chaiyakul
+ */
 public class Pivot extends FSM {
     private static Pivot mInstance;
 
@@ -26,7 +32,7 @@ public class Pivot extends FSM {
 
     private Pivot() {
     };
-    
+
     public void compute() {
         nState = Registers.kPivotState.get();
 

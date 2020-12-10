@@ -7,6 +7,12 @@ import com.team2568.frc2020.states.ClimbState;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+/**
+ * Y button toggles climb extension. Right Y axis controls the speed of the
+ * screw when the climber has been toggled at least once.
+ * 
+ * @author Ryan Chaiyakul
+ */
 public class Climb extends FSM {
     private static Climb mInstance;
 

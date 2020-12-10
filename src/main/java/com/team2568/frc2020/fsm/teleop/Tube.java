@@ -8,6 +8,14 @@ import com.team2568.frc2020.subsystems.Tube.TubeValue;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+/**
+ * LB move the balls up the tube. LT runs both the intake and tube to intake the
+ * balls. RT shoots the balls and the tube must spin to push the unlocked balls
+ * into the shooter wheels. B reverses the tube to removes the balls from the
+ * back.
+ * 
+ * @author Ryan Chaiyakul
+ */
 public class Tube extends FSM {
     private static Tube mInstance;
 

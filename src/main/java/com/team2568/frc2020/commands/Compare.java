@@ -12,6 +12,6 @@ public class Compare<T> {
     }
 
     public boolean isEqual() {
-        return register.get() == value;
+        return register.get().equals(value);
     }
 }

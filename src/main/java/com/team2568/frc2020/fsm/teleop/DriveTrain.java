@@ -8,6 +8,13 @@ import com.team2568.frc2020.subsystems.DriveTrain.DriveMode;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+/**
+ * A button inverts controls. Left and right Y axis controls the left and right
+ * speed respectively. LB and RB changes the drive power that is used in the
+ * curve function.
+ * 
+ * @author Ryan Chaiyakul
+ */
 public class DriveTrain extends FSM {
     private static DriveTrain mInstance;
 

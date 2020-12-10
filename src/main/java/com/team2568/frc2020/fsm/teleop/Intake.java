@@ -8,9 +8,15 @@ import com.team2568.frc2020.subsystems.Intake.IntakeValue;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+/**
+ * A button toggles the intake position. LT intakes while RB reverses the the
+ * intake. The intake can only spin in the down position.
+ * 
+ * @author Ryan Chaiyakul
+ */
 public class Intake extends FSM {
     private static Intake mInstance;
-    
+
     private IntakeState nState;
     private boolean down;
     private IntakeValue on;
