@@ -10,6 +10,12 @@ import java.util.Random;
 import java.io.*;
 
 
+import java.io.File;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+
+
+
 /**
  * Test resetable register class
  * r1 -- register of integer type
@@ -80,6 +86,12 @@ public class TestResetableRegister {
     private Payload r4_reset_val;
 
 
+    // yaml test
+    private File file;
+    private ObjectMapper objectMapper;
+    private ApplicationConfig config;
+
+
     // mimick advance "n" nuber of system clock ticks 
     private void _sysClkTick(int n) {
         for (int i = 0 ; i < n; i++) {
@@ -136,7 +148,23 @@ public class TestResetableRegister {
         r4_reset_val = new Payload(rand);
         r4 = new ResetableRegister<Payload>(r4_reset_val);
 
+        file = new File("src/main/resources/application.yaml");
+        objectMapper = new ObjectMapper(new YAMLFactory());
+        config = objectMapper.readValue(file, ApplicationConfig.class);
+
         _sysClkTick(1);
+
+    }
+
+
+    /**
+     * Test yaml
+     */
+    @Test
+    public void testYAML ()
+    {
+
+        System.out.println("Application config info " + config.toString());
 
     }
 
