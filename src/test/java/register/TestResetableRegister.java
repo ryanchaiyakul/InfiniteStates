@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Random;
+import java.util.Scanner;
 import java.io.*;
 
 
@@ -42,13 +43,20 @@ public class TestResetableRegister {
 
     // enumerated register
     public enum Day {
-        SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY;
+        SUNDAY,
+        MONDAY, 
+        TUESDAY, 
+        WEDNESDAY, 
+        THURSDAY, 
+        FRIDAY, 
+        SATURDAY;
 
         public static Day nextDay() {
             Day[] days = Day.values();
             Random generator = new Random();
             return days[generator.nextInt(days.length)];
         }
+
     }
     private ResetableRegister <Day> r3;
     private Day r3_reset_val;
@@ -58,6 +66,12 @@ public class TestResetableRegister {
         Day data1;
         int data2;
         double data3;
+
+        public Payload() {
+            this.data1 = Day.valueOf("SUNDAY"); 
+            this.data2 = 0;
+            this.data3 = 0;
+        }
 
         // create payload with random data
         public Payload (Random generator) {
@@ -81,7 +95,19 @@ public class TestResetableRegister {
             assertEquals(this.data3,val.data3,epsilon);
             return true;
         }
+
     }
+    Payload parsePayload(String s) {
+        Payload ret;
+        Scanner scanner = new Scanner(s);
+
+        ret = new Payload();
+        ret.data1 = Day.valueOf(scanner.next());
+        ret.data2 = scanner.nextInt();
+        ret.data3 = scanner.nextDouble(); 
+        return (ret);
+    }
+            
     private ResetableRegister <Payload> r4;
     private Payload r4_reset_val;
 
@@ -190,6 +216,51 @@ public class TestResetableRegister {
         assertEquals(r3.get(),r3_reset_val);
 
         assertTrue(r4.get().equal(r4_reset_val));
+    }
+
+    /**
+     * Test setStringVal
+     */
+    @Test
+    public void testSetStringVal()
+    {
+        String r1_val = "20";
+        String r2_val = "2.321";
+        String r3_val = "THURSDAY";
+        String r4_val = "FRIDAY 43 1.213";
+
+        _sysReset();
+
+        r1.setStringVal(r1_val,new StringToValFunc<Integer> (){
+                public Integer convert (String s) {
+                    return (Integer.parseInt(s));
+                }
+            });
+
+        r2.setStringVal(r2_val,new StringToValFunc<Double> (){
+                public Double convert (String s) {
+                    return (Double.parseDouble(s));
+                }
+            });
+        r3.setStringVal(r3_val,new StringToValFunc<Day> (){
+                public Day convert (String s) {
+                    return Day.valueOf(s);
+                }
+            });
+        r4.setStringVal(r4_val,new StringToValFunc<Payload> (){
+                public Payload convert (String s) {
+                    return parsePayload(s);
+                }
+            });
+
+
+        _sysClkTick (1); 
+
+        assertEquals(r1.get().intValue(),20);
+        assertEquals(r2.get().doubleValue(),2.321,epsilon);
+        assertEquals(r3.get(),Day.THURSDAY);
+        assertTrue(r4.get().equal(parsePayload(r4_val)));
+
     }
 
 
