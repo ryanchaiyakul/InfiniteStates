@@ -2,28 +2,33 @@ package com.team2568.frc2020.registers;
 
 import java.util.ArrayList;
 
+/**
+ * Stores all set values and pops values when get is called. Throws an exception
+ * if the stack is full and set is called.
+ */
 public class FiFoRegister<T> extends Register<T> {
-    private ArrayList<T> cache = new ArrayList<T>();
+    private ArrayList<T> stack = new ArrayList<T>();
     private int depth;
 
-    public FiFoRegister(int depth) {
+    public FiFoRegister(StringToValue<T> parser, int depth) {
+        super(parser);
         this.depth = depth;
     }
 
     @Override
-    public void set(T value) throws RuntimeException {
-        if (cache.size() < depth) {
-            cache.add(value);
+    public void set(T value) throws IndexOutOfBoundsException {
+        if (stack.size() < depth) {
+            stack.add(value);
         } else {
-            throw new RuntimeException("FiFo of depth " + depth + " is full");
+            throw new IndexOutOfBoundsException("FiFo of depth " + depth + " is full");
         }
     }
 
     @Override
     public T get() {
-        if (cache.size() > 0) {
-            return cache.remove(0);
+        if (stack.size() > 0) {
+            return stack.remove(0);
         }
         return null;
     }
-}   
+}

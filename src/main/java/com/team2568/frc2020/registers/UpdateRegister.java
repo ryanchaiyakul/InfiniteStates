@@ -6,6 +6,10 @@ package com.team2568.frc2020.registers;
 public class UpdateRegister<T> extends Register<T> {
 	private T mCurrent;
 
+	public UpdateRegister(StringToValue<T> parser) {
+		super(parser);
+	}
+
 	@Override
 	public void set(T value) {
 		synchronized (mLock) {

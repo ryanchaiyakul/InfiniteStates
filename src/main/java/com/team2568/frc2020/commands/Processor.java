@@ -1,6 +1,6 @@
 package com.team2568.frc2020.commands;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import com.team2568.frc2020.Registers;
 import com.team2568.frc2020.ILooper;
@@ -14,7 +14,7 @@ public class Processor extends ILooper {
 
     private int counter;
 
-    private ArrayList<Command> mCommandList;
+    private List<Command> mCommandList;
 
     private Runnable mRunnable = new Runnable() {
         @Override
@@ -23,9 +23,18 @@ public class Processor extends ILooper {
                 if (counter < mCommandList.size()) {
                     int temp = mCommandList.get(counter).execute();
 
+                    /**
+                     * Return of command (temp) action
+                     * 
+                     * -2 : stay
+                     * 
+                     * -1 : increment
+                     * 
+                     * any : jump to line
+                     */
                     if (temp == -1) {
                         counter++;
-                    } else {
+                    } else if (temp != -2) {
                         counter = temp;
                     }
                 }
@@ -45,7 +54,7 @@ public class Processor extends ILooper {
     }
 
     private Processor() {
-        super("Processor");
+        super("Processor", 1);
         registerRunnables(mRunnable);
 
         registerStoppableRegisters(Registers.kClimbExtend, Registers.kClimbSpeed);
@@ -57,7 +66,7 @@ public class Processor extends ILooper {
         registerStoppableRegisters(Registers.kTubeValue);
     }
 
-    public void loadProgram(ArrayList<Command> commandList) {
+    public void loadProgram(List<Command> commandList) {
         if (!isActive()) {
             synchronized (mCommandLock) {
                 mCommandList = commandList;

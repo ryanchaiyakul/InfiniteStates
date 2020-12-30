@@ -1,15 +1,14 @@
 package com.team2568.frc2020.registers;
 
+/**
+ * Set can only be called once. Additonal calls of set will not change the
+ * value.
+ */
 public class SetOnceRegister<T> extends Register<T> {
-    private boolean isSet;
+    private boolean isSet = false;
 
-    public SetOnceRegister() {
-        isSet = false;
-    }
-
-    public SetOnceRegister(T value) {
-        this();
-        set(value);
+    public SetOnceRegister(StringToValue<T> parser) {
+        super(parser);
     }
 
     @Override

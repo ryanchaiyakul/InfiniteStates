@@ -2,6 +2,7 @@
 package register;
 
 import com.team2568.frc2020.registers.ResetableRegister;
+import com.team2568.frc2020.registers.StringToValue;
 
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -60,10 +61,10 @@ public class TestResetableRegister {
         rand = new Random();
 
         r1_reset_val = rand.nextInt();
-        r1 = new ResetableRegister<Integer>(r1_reset_val);
+        r1 = new ResetableRegister<Integer>(StringToValue.kInteger, r1_reset_val);
 
         r2_reset_val = rand.nextDouble();
-        r2 = new ResetableRegister<Double>(r2_reset_val);
+        r2 = new ResetableRegister<Double>(StringToValue.kDouble, r2_reset_val);
 
         _sysClkTick(1);
 

@@ -7,19 +7,24 @@
 
 package frc.robot;
 
-import java.util.ArrayList;
-
 import com.team2568.frc2020.Registers;
-import com.team2568.frc2020.commands.Command;
-import com.team2568.frc2020.commands.Compare;
-import com.team2568.frc2020.commands.JumpIfEqual;
-import com.team2568.frc2020.commands.NOOP;
 import com.team2568.frc2020.commands.Processor;
-import com.team2568.frc2020.commands.Set;
+import com.team2568.frc2020.commands.Command;
+import com.team2568.frc2020.commands.CommandParser;
 import com.team2568.frc2020.fsm.teleop.TeleopLooper;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team2568.frc2020.ILooper;
 import com.team2568.frc2020.subsystems.SubsystemLooper;
 
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -55,22 +60,22 @@ public class Robot extends TimedRobot {
 		teleopLooper = TeleopLooper.getInstance();
 		processor = Processor.getInstance();
 
-		ArrayList<Command> commandList = new ArrayList<>();
+		// Parse json program file
+		File file = new File(Filesystem.getDeployDirectory(), "example.json");
+		ObjectMapper om = new ObjectMapper(new JsonFactory());
 
-		commandList.add(new Set<Double>(Registers.kDriveL, 1.0));
-		commandList.add(new Set<Double>(Registers.kDriveR, 0.5));
-		for (int i = 0; i < 100; i++) {
-			commandList.add(new NOOP());
-		}
-		commandList.add(new Set<Double>(Registers.kDriveL, 0.5));
-		commandList.add(new Set<Double>(Registers.kDriveR, 1.0));
-		for (int i = 0; i < 100; i++) {
-			commandList.add(new NOOP());
-		}
-		commandList.add(new JumpIfEqual(new Compare<Boolean>(Registers.kTelemetry, true), 0));
-		commandList.add(new NOOP());
+		try {
+			List<CommandParser> parserList = om.readValue(file, new TypeReference<List<CommandParser>>() {
+			});
+			List<Command> commandList = new ArrayList<>();
 
-		processor.loadProgram(commandList);
+			for (CommandParser parser : parserList) {
+				commandList.add(parser.getCommand());
+			}
+
+			processor.loadProgram(commandList);
+		} catch (IOException e) {
+		}
 	}
 
 	/**
@@ -100,9 +105,10 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void autonomousInit() {
-		subsystemLooper.reset();
+		processor.reset();
 		teleopLooper.stop();
-		processor.start();
+		subsystemLooper.reset();
+
 	}
 
 	/**
@@ -117,9 +123,10 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void teleopInit() {
-		subsystemLooper.reset();
+		processor.reset();
 		teleopLooper.start();
-		processor.stop();
+		subsystemLooper.reset();
+
 	}
 
 	/**
@@ -151,9 +158,6 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void testInit() {
-		subsystemLooper.reset();
-		teleopLooper.stop();
-		processor.stop();
 	}
 
 	/**

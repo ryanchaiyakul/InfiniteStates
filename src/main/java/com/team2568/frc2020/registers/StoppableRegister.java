@@ -6,15 +6,15 @@ package com.team2568.frc2020.registers;
 public class StoppableRegister<T> extends ResetableRegister<T> {
     private T mStopValue;
 
-    public StoppableRegister(T resetValue, T stopValue) {
-        super(resetValue);
+    public StoppableRegister(StringToValue<T> parser, T resetValue, T stopValue) {
+        super(parser, resetValue);
         this.mStopValue = stopValue;
     }
 
     public void stop() {
         set(mStopValue);
     }
-    
+
     public T getStop() {
         return mStopValue;
     }
