@@ -1,6 +1,6 @@
 # InFiniteStates
 
-[![Build Status](https://travis-ci.com/ryanchaiyakul/InfiniteStates.svg?branch=master)](https://travis-ci.com/ryanchaiyakul/InfiniteStates)
+![Java CI with Gradle](https://github.com/ryanchaiyakul/InFiniteStates/workflows/Java%20CI%20with%20Gradle/badge.svg)
 
 ## Software Architecture
 
