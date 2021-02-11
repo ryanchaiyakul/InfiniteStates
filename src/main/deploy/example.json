@@ -1,0 +1,7 @@
+[
+  { "command": "set", "params": { "register": 19, "value": "-0.5" } },
+  { "command": "noop", "params": { "amount": 10 } },
+  { "command": "set", "params": { "register": 19, "value": "0.5" } },
+  { "command": "noop", "params": { "amount": 5 } },
+  { "command": "jump", "params": { "pc": 0 } }
+]
