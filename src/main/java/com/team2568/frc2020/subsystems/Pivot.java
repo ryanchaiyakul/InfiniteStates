@@ -62,7 +62,8 @@ public class Pivot extends Subsystem {
             motor = SparkMaxFactory.getDefault(Constants.kPivotMotor);
             SparkMaxFactory.setPIDF(motor, Constants.kPivotkP, Constants.kPivotkI, Constants.kPivotkD,
                     Constants.kPivotkF);
-            SparkMaxFactory.setOutput(motor, Constants.kPivotAutoMinSpeed, Constants.kPivotAutoMaxSpeed);
+            // Outputs are switched b/c - is up and + is down
+            SparkMaxFactory.setOutput(motor, -Constants.kPivotAutoMaxSpeed, -Constants.kPivotAutoMinSpeed);
         }
 
         lowerLimit = new DigitalInput(Constants.kPivotLimit);

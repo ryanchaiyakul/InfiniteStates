@@ -54,7 +54,7 @@ public class Processor extends ILooper {
     }
 
     private Processor() {
-        super("Processor", 1);
+        super("Processor");
         registerRunnables(mRunnable);
 
         registerStoppableRegisters(Registers.kClimbExtend, Registers.kClimbSpeed);

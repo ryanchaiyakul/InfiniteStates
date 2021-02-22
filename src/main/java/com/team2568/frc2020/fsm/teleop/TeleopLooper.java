@@ -18,7 +18,7 @@ public class TeleopLooper extends ILooper {
     }
 
     private TeleopLooper() {
-        super("Teleop", 1);
+        super("Teleop");
         registerRunnables(Climb.getInstance().getRunnable(), Intake.getInstance().getRunnable(),
                 DriveTrain.getInstance().getRunnable(), Pivot.getInstance().getRunnable(),
                 Shooter.getInstance().getRunnable(), Tube.getInstance().getRunnable());

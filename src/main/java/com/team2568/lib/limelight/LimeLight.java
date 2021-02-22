@@ -1,93 +1,101 @@
-package com.team2568.frc2020;
+package com.team2568.lib.limelight;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class LimeLight {
-    private static NetworkTable mNT = NetworkTableInstance.getDefault().getTable("limelight");
+    private NetworkTable mNT;
 
-    public static boolean getTv() {
+    public LimeLight() {
+        this("limelight");
+    }
+
+    public LimeLight(String name) {
+        mNT = NetworkTableInstance.getDefault().getTable(name);
+    }
+
+    public boolean getTv() {
         return mNT.getEntry("tv").getDouble(0) == 1 ? true : false;
     }
 
-    public static double getTx() {
+    public double getTx() {
         return mNT.getEntry("tx").getDouble(0);
     }
 
-    public static double getTy() {
+    public double getTy() {
         return mNT.getEntry("tx").getDouble(0);
     }
 
-    public static double getTa() {
+    public double getTa() {
         return mNT.getEntry("ta").getDouble(0);
     }
 
-    public static double getTs() {
+    public double getTs() {
         return mNT.getEntry("ts").getDouble(0);
     }
 
-    public static double getTl() {
+    public double getTl() {
         // add 11 for image capture latency
         return mNT.getEntry("tl").getDouble(0) + 11;
     }
 
-    public static double getTshort() {
+    public double getTshort() {
         return mNT.getEntry("tshort").getDouble(0);
     }
 
-    public static double getTlong() {
+    public double getTlong() {
         return mNT.getEntry("tlong").getDouble(0);
     }
 
-    public static double getThor() {
+    public double getThor() {
         return mNT.getEntry("thor").getDouble(0);
     }
 
-    public static double getPipeline() {
+    public double getPipeline() {
         return mNT.getEntry("getpipe").getDouble(0);
     }
 
-    public static void setLedPipe() {
+    public void setLedPipe() {
         mNT.getEntry("ledMode").setNumber(0);
     }
 
-    public static void setLedOff() {
+    public void setLedOff() {
         mNT.getEntry("ledMode").setNumber(1);
     }
 
-    public static void setLedBlink() {
+    public void setLedBlink() {
         mNT.getEntry("ledMode").setNumber(2);
     }
 
-    public static void setLedOn() {
+    public void setLedOn() {
         mNT.getEntry("ledMode").setNumber(3);
     }
 
-    public static void setVision() {
+    public void setVision() {
         mNT.getEntry("camMode").setNumber(0);
     }
 
-    public static void setDriver() {
+    public void setDriver() {
         mNT.getEntry("camMode").setNumber(1);
     }
 
-    public static void setStandard() {
+    public void setStandard() {
         mNT.getEntry("stream").setNumber(0);
     }
 
-    public static void setPrimary() {
+    public void setPrimary() {
         mNT.getEntry("stream").setNumber(1);
     }
 
-    public static void setSecondary() {
+    public void setSecondary() {
         mNT.getEntry("stream").setNumber(2);
     }
 
-    public static void setPipeline(int pipeline) {
-        mNT.getEntry("pipeline").setNumber(pipeline);
+    public void setPipeline(int pipeline) {
+        setPipeline(pipeline, true);
     }
 
-    public static void setPipeline(int pipeline, Boolean ledFromPipe) {
+    public void setPipeline(int pipeline, Boolean ledFromPipe) {
         mNT.getEntry("pipeline").setNumber(pipeline);
         if (ledFromPipe) {
             setLedPipe();

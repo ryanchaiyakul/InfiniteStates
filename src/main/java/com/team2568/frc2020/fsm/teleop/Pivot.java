@@ -3,6 +3,7 @@ package com.team2568.frc2020.fsm.teleop;
 import com.team2568.frc2020.Constants;
 import com.team2568.frc2020.Registers;
 import com.team2568.frc2020.fsm.FSM;
+import com.team2568.frc2020.fsm.auto.Pivot.PivotAutoMode;
 import com.team2568.frc2020.states.PivotState;
 import com.team2568.frc2020.subsystems.Pivot.PivotMode;
 
@@ -43,26 +44,32 @@ public class Pivot extends FSM {
                 joystick = Constants.kOperatorController.getLeftDeadzoneY();
 
                 if (joystick == 0) {
-                    switch (Constants.kOperatorController.getPOV()) {
-                        case 0:
-                            // Up
-                            nState = PivotState.AGAINST;
-                            break;
-                        case 90:
-                            // Right
-                            nState = PivotState.WHEEL;
-                            break;
-                        case 180:
-                            // Down
-                            nState = PivotState.TRENCH;
-                            break;
-                        case 270:
-                            // Left
-                            nState = PivotState.LINE;
-                            break;
-                        default:
-                            // Nothing is pressed
-                            break;
+                    if (Constants.kOperatorController.getRightStickButton()) {
+                        nState = PivotState.TARGET;
+
+                        Registers.kPivotAutoMode.set(PivotAutoMode.kTarget);
+                    } else {
+                        switch (Constants.kOperatorController.getPOV()) {
+                            case 0:
+                                // Up
+                                nState = PivotState.AGAINST;
+                                break;
+                            case 90:
+                                // Right
+                                nState = PivotState.WHEEL;
+                                break;
+                            case 180:
+                                // Down
+                                nState = PivotState.TRENCH;
+                                break;
+                            case 270:
+                                // Left
+                                nState = PivotState.LINE;
+                                break;
+                            default:
+                                // Nothing is pressed
+                                break;
+                        }
                     }
                 }
                 break;
@@ -104,6 +111,18 @@ public class Pivot extends FSM {
                 if (Constants.kOperatorController.getRightDeadzoneY() != 0
                         || Constants.kOperatorController.getPOV() != 270) {
                     nState = PivotState.TELEOP;
+                }
+                break;
+            case TARGET:
+                nMode = PivotMode.kAuto;
+                targetRev = Registers.kPivotAutoTargetRev.get();
+                joystick = 0;
+
+                if (Constants.kOperatorController.getRightDeadzoneY() != 0
+                        || !Constants.kOperatorController.getRightStickButton()) {
+                    nState = PivotState.TELEOP;
+
+                    Registers.kPivotAutoMode.set(PivotAutoMode.kOff);
                 }
                 break;
             case STOP:

@@ -3,6 +3,7 @@ package com.team2568.frc2020.fsm.teleop;
 import com.team2568.frc2020.Constants;
 import com.team2568.frc2020.Registers;
 import com.team2568.frc2020.fsm.FSM;
+import com.team2568.frc2020.fsm.auto.DriveTrain.DriveAutoMode;
 import com.team2568.frc2020.states.DriveState;
 import com.team2568.frc2020.subsystems.DriveTrain.DriveMode;
 
@@ -22,11 +23,13 @@ public class DriveTrain extends FSM {
 
     private DriveMode nMode;
 
-    private double lJoystick, rJoystick;
+    private double left, right;
+    private double forward, rotation;
+
     private int constL, constR;
     private double drivePower;
 
-    private double forward, rotation;
+    private boolean isInverted;
 
     public static DriveTrain getInstance() {
         if (mInstance == null) {
@@ -44,33 +47,101 @@ public class DriveTrain extends FSM {
         switch (Registers.kDriveState.get()) {
             case STANDARD:
                 nMode = DriveMode.kTank;
-                lJoystick = Constants.kDriveController.getLeftY();
-                rJoystick = Constants.kDriveController.getRightY();
+                left = Constants.kDriveController.getLeftY();
+                right = Constants.kDriveController.getRightY();
                 forward = 0;
                 rotation = 0;
+                isInverted = false;
 
-                // A will invert the controls
-                if (Constants.kDriveController.getAButtonPressed()) {
+                // X will invert the controls
+                if (Constants.kDriveController.getXButtonPressed()) {
                     nState = DriveState.INVERTED;
+                } else if (Constants.kDriveController.getAButton()) {
+                    nState = DriveState.FORWARD;
+                } else if (Constants.kDriveController.getYButton()) {
+                    nState = DriveState.REVERSE;
+                } else if (Constants.kDriveController.getBButton()) {
+                    nState = DriveState.TARGET;
+                    Registers.kDriveAutoMode.set(DriveAutoMode.kTarget);
                 }
                 break;
             case INVERTED:
                 nMode = DriveMode.kTank;
                 // Has to be flipped both in polarity and sign
-                lJoystick = -Constants.kDriveController.getRightY();
-                rJoystick = -Constants.kDriveController.getLeftY();
+                left = -Constants.kDriveController.getRightY();
+                right = -Constants.kDriveController.getLeftY();
                 forward = 0;
                 rotation = 0;
+                isInverted = true;
 
-                // A will invert the controls
-                if (Constants.kDriveController.getAButtonPressed()) {
-                    nState = DriveState.STANDARD;
+                // X will invert the controls
+                if (Constants.kDriveController.getXButtonPressed()) {
+                    nState = DriveState.INVERTED;
+                } else if (Constants.kDriveController.getAButton()) {
+                    nState = DriveState.FORWARD;
+                } else if (Constants.kDriveController.getYButton()) {
+                    nState = DriveState.REVERSE;
+                } else if (Constants.kDriveController.getBButton()) {
+                    nState = DriveState.TARGET;
+                    Registers.kDriveAutoMode.set(DriveAutoMode.kTarget);
                 }
                 break;
+            case FORWARD:
+                nMode = DriveMode.kArcade;
+                left = 0;
+                right = 0;
+                // Drive power is conicidently the same as the constant speed we use for forward
+                // and backwards
+                forward = getDrivePower();
+                rotation = 0;
+
+                if (!Constants.kDriveController.getAButton()) {
+                    // Preserve the previous state when switching back
+                    if (isInverted) {
+                        nState = DriveState.INVERTED;
+                    } else {
+                        nState = DriveState.STANDARD;
+                    }
+                }
+                break;
+            case REVERSE:
+                nMode = DriveMode.kArcade;
+                left = 0;
+                right = 0;
+                // Drive power is conicidently the same as the constant speed we use for forward
+                // and backwards
+                forward = -getDrivePower();
+                rotation = 0;
+
+                if (!Constants.kDriveController.getYButton()) {
+                    // Preserve the previous state when switching back
+                    if (isInverted) {
+                        nState = DriveState.INVERTED;
+                    } else {
+                        nState = DriveState.STANDARD;
+                    }
+                }
+                break;
+            case TARGET:
+                nMode = DriveMode.kArcade;
+                left = 0;
+                right = 0;
+                forward = 0;
+                rotation = Registers.kDriveAutoDriveZ.get();
+
+                if (!Constants.kDriveController.getBButton()) {
+                    Registers.kDriveAutoMode.set(DriveAutoMode.kOff);
+                    // Preserve the previous state when switching back
+                    if (isInverted) {
+                        nState = DriveState.INVERTED;
+                    } else {
+                        nState = DriveState.STANDARD;
+                    }
+                }
             case STOP:
                 nMode = DriveMode.kOff;
-                lJoystick = 0;
-                rJoystick = 0;
+                left = 0;
+                right = 0;
                 forward = 0;
                 rotation = 0;
                 break;
@@ -78,8 +149,8 @@ public class DriveTrain extends FSM {
 
         setDirection();
 
-        Registers.kDriveL.set(constL * toDriveSpeed(lJoystick));
-        Registers.kDriveR.set(constR * toDriveSpeed(rJoystick));
+        Registers.kDriveL.set(constL * toDriveSpeed(left));
+        Registers.kDriveR.set(constR * toDriveSpeed(right));
         Registers.kDriveF.set(forward);
         Registers.kDriveZ.set(rotation);
 
@@ -115,15 +186,15 @@ public class DriveTrain extends FSM {
 
         // Use a constant multiplier for +/- direction as the driveExponent could be
         // even and negate the sign
-        if (rJoystick < 0) {
+        if (right < 0) {
             constR *= 1;
-        } else if (rJoystick > 0) {
+        } else if (right > 0) {
             constR *= -1;
         }
 
-        if (lJoystick < 0) {
+        if (left < 0) {
             constL *= 1;
-        } else if (lJoystick > 0) {
+        } else if (left > 0) {
             constL *= -1;
         }
     }

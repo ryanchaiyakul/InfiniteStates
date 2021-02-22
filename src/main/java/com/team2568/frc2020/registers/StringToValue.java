@@ -1,5 +1,7 @@
 package com.team2568.frc2020.registers;
 
+import com.team2568.frc2020.fsm.auto.DriveTrain.DriveAutoMode;
+import com.team2568.frc2020.fsm.auto.Pivot.PivotAutoMode;
 import com.team2568.frc2020.states.ClimbState;
 import com.team2568.frc2020.states.DriveState;
 import com.team2568.frc2020.states.IntakeState;
@@ -117,6 +119,20 @@ public interface StringToValue<T> {
         @Override
         public DriveMode convert(String s) {
             return DriveMode.valueOf(s);
+        }
+    };
+
+    public static StringToValue<PivotAutoMode> kPivotAutoMode = new StringToValue<PivotAutoMode>() {
+        @Override
+        public PivotAutoMode convert(String s) {
+            return PivotAutoMode.valueOf(s);
+        }
+    };
+
+    public static StringToValue<DriveAutoMode> kDriveAutoMode = new StringToValue<DriveAutoMode>() {
+        @Override
+        public DriveAutoMode convert(String s) {
+            return DriveAutoMode.valueOf(s);
         }
     };
 }

@@ -1,5 +1,9 @@
 package com.team2568.frc2020;
 
+import com.team2568.frc2020.fsm.auto.Pivot.PivotAlgorithmMode;
+import com.team2568.lib.limelight.Distance;
+
+// All physical constants are in MKS and radians
 public class Constants {
 	// RunnableConstants
 	public static final double kDefaultPeriod = 0.01;
@@ -75,13 +79,13 @@ public class Constants {
 	public static final double kTubeShootSpeed = 1;
 
 	// Pivot Constants
-	public static final double kPivotAutoMinSpeed = -0.1;
+	public static final double kPivotAutoMinSpeed = -0.2;
 	public static final double kPivotAutoMaxSpeed = 0.25;
 
 	public static final double kPivotZeroSpeed = 0.05;
 	public static final double kPivotTeleopSpeed = 0.25;
 
-	public static final double kPivotZeroThreshold = 3;
+	public static final double kPivotZeroThreshold = 5;
 	public static final double kPivotHighestThreshold = 80;
 	public static final double kPivotTargetRevThreshold = 0.5;
 
@@ -90,10 +94,12 @@ public class Constants {
 	public static final double kPivotAgainst = 79;
 	public static final double kPivotWheel = 33;
 
-	public static final double kPivotkP = 0;
+	public static final double kPivotkP = 0.6;
 	public static final double kPivotkI = 0;
-	public static final double kPivotkD = 0;
+	public static final double kPivotkD = 4;
 	public static final double kPivotkF = 0;
+
+	public static final PivotAlgorithmMode kPivotAlgorithmMode = PivotAlgorithmMode.kIterate;
 
 	// Climb Constants
 	public static final double kClimbSpeed = 0.975;
@@ -102,4 +108,33 @@ public class Constants {
 	public static final double kDriveSlowPower = 0.4;
 	public static final double kDriveRegularPower = 0.7;
 	public static final double kDriveTurboPower = 0.9;
+
+	public static final double kDrivekP = 0.28;
+	public static final double kDrivekI = 0;
+	public static final double kDrivekD = 0.055;
+
+	public static final double kDriveMaxRotationSpeed = 0.23;
+
+	// LimeLight Constants
+	public static final int kUpperPort = 1;
+
+	// Physical Constants
+	public static final double kShooterVelocity = 30.48;
+
+	public static final double kUpperPortHeight = 2.1425; // Height to the center of the port for theta calculations
+	public static final double kUpperPortHeightDistance = 2.1425; // Lower than actual height b/c bounding box is lower
+	public static final double kPivotToLimeLight = 0.7408926; // The horizontal distance from the pivot point of the
+																// tube to the limelight
+	public static final double kTubeLength = 0.861401122; // The length of the tube from the pivot point to the exit
+															// point
+	public static final double kPivotHeight = 0.1676908; // The height of the pivot point of the tube off the ground
+
+	public static final double kG = 9.81; // Gravity Constant in MKS units
+
+	// Forward Facing Constants
+	public static final double kForwardLLMountingHeight = 0.4191;
+	public static final double kForwardLLMountingAngle = 0.5759;
+
+	public static final Distance kForwardDistance = new Distance(kForwardLLMountingHeight, kForwardLLMountingAngle,
+			kUpperPortHeightDistance);
 }

@@ -50,6 +50,14 @@ public class Controller extends XboxController {
         return getBumperReleased(Hand.kRight);
     }
 
+    public boolean getLeftStickButton() {
+        return getStickButton(Hand.kLeft);
+    }
+
+    public boolean getRightStickButton() {
+        return getStickButton(Hand.kRight);
+    }
+
     public double getLeftX() {
         return getX(Hand.kLeft);
     }

@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import com.team2568.frc2020.fsm.auto.DriveTrain.DriveAutoMode;
+import com.team2568.frc2020.fsm.auto.Pivot.PivotAutoMode;
 import com.team2568.frc2020.registers.Register;
 import com.team2568.frc2020.registers.SetOnceRegister;
 import com.team2568.frc2020.registers.StoppableRegister;
@@ -101,6 +103,23 @@ public class Registers {
 	// Pivot Status Registers
 
 	public static final UpdateRegister<Double> kPivotRev = new UpdateRegister<Double>(StringToValue.kDouble);
+
+	// Autonomous Mode Registers
+
+	public static final StoppableRegister<PivotAutoMode> kPivotAutoMode = new StoppableRegister<PivotAutoMode>(
+			StringToValue.kPivotAutoMode, PivotAutoMode.kOff, PivotAutoMode.kOff);
+	public static final StoppableRegister<DriveAutoMode> kDriveAutoMode = new StoppableRegister<DriveAutoMode>(
+			StringToValue.kDriveAutoMode, DriveAutoMode.kOff, DriveAutoMode.kOff);
+
+	// Autonomous Output Registers
+
+	// Pivot Registers
+
+	public static final UpdateRegister<Double> kPivotAutoTargetRev = new UpdateRegister<Double>(StringToValue.kDouble);
+
+	// DriveTrain Registers
+
+	public static final UpdateRegister<Double> kDriveAutoDriveZ = new UpdateRegister<Double>(StringToValue.kDouble);
 
 	public static final List<Register<?>> kRegisters = Collections.unmodifiableList(Arrays.asList(kTelemetry, kReal,
 			kShooterState, kIntakeState, kTubeState, kPivotState, kClimbState, kDriveState, kShooterValue,
