@@ -16,6 +16,7 @@ public class DifferentialDriveHelper {
 
     public DifferentialDriveHelper(double tickToMeter) {
         this.mGyro = new ADXRS450_Gyro();
+        mGyro.calibrate();
         mOdometry = new DifferentialDriveOdometry(mGyro.getRotation2d());
     }
 
@@ -39,6 +40,7 @@ public class DifferentialDriveHelper {
             lEncoder.setPosition(0);
             rEncoder.setPosition(0);
         }
+        mGyro.reset();
         mOdometry.resetPosition(pose, mGyro.getRotation2d());
     }
 
