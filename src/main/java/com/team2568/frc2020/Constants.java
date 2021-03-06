@@ -161,7 +161,7 @@ public class Constants {
 	public static final double kWheelDiameter = 0.1524;
 	public static final double kDistancePerRevolution = Math.PI * kWheelDiameter;
 
-	public static final DifferentialDriveHelper kDriveHelper = new DifferentialDriveHelper(kTicksToRevolution);
+	public static final DifferentialDriveHelper kDriveHelper = new DifferentialDriveHelper(kDistancePerRevolution/kTicksToRevolution);
 
 	// Upper Port Constants
 	public static final double kUpperPortHeight = 2.1425; // Height to the center of the port for theta calculations

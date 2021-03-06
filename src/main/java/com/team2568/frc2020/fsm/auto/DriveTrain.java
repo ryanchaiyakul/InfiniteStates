@@ -72,6 +72,7 @@ public class DriveTrain extends FSM {
 
             if (mStart == 0) {
                 mStart = Timer.getFPGATimestamp();
+                Constants.kDriveHelper.reset(mTrajectory.getInitialPose());
             }
 
             DifferentialDriveWheelSpeeds wheelSpeeds = getSpeed();

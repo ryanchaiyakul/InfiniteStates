@@ -62,11 +62,13 @@ public class Robot extends TimedRobot {
 		// Registers.kReal.set(true);
 		SmartDashboard.putBoolean("isReal", Registers.kReal.get());
 
-		if (!Registers.kReal.get()) {
-			Registers.kTelemetry.set(true);
-		} else {
-			Registers.kTelemetry.set(false);
-		}
+		Registers.kTelemetry.set(true);
+
+		//if (!Registers.kReal.get()) {
+		//	Registers.kTelemetry.set(true);
+		//} else {
+		//	Registers.kTelemetry.set(false);
+		//}
 
 		// Get loopers
 		subsystemLooper = SubsystemLooper.getInstance();
@@ -143,7 +145,7 @@ public class Robot extends TimedRobot {
 						"Unable to open trajectory: " + mTrajectoryChooser.getSelected() + ".wpilib.json",
 						ex.getStackTrace());
 				return;
-			}
+			}			
 
 			Registers.kDriveAutoTrajectory.set(trajectory);
 			Registers.kDriveAutoMode.set(DriveAutoMode.kTrajectory);
@@ -156,8 +158,11 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
+		Registers.kDriveMode.set(DriveMode.kDifferential);
 		Registers.kDriveLV.set(Registers.kDriveAutoLV.get());
 		Registers.kDriveRV.set(Registers.kDriveAutoRV.get());
+
+		System.out.println(Registers.kDriveAutoLV.get() + "," + Registers.kDriveAutoRV.get());
 	}
 
 	/**
