@@ -74,15 +74,15 @@ public class Pivot extends Subsystem {
         speed = 0;
 
         switch (Registers.kPivotMode.get()) {
-            case kAuto:
-                goToRev(Registers.kPivotTargetRev.get());
-                break;
-            case kTeleop:
-                teleopRun();
-                break;
-            case kOff:
-                stop();
-                break;
+        case kAuto:
+            goToRev(Registers.kPivotTargetRev.get());
+            break;
+        case kTeleop:
+            teleopRun();
+            break;
+        case kOff:
+            stop();
+            break;
         }
     }
 
@@ -200,12 +200,17 @@ public class Pivot extends Subsystem {
     }
 
     public void writeDashboard() {
-        SmartDashboard.putNumber("PivotRevolution", getRev());
+        if (Registers.kReal.get()) {
+            SmartDashboard.putNumber("PivotRevolution", getRev());
+        }
     }
 
     public void outputTelemetry() {
-        SmartDashboard.putBoolean("PivotLimit", lowerLimit.get());
-        SmartDashboard.putNumber("PivotSpeed", speed);
-        SmartDashboard.putNumber("PivotTargetRev", refrence);
+        if (!Registers.kReal.get()) {
+            SmartDashboard.putNumber("PivotSpeed", speed);
+            SmartDashboard.putNumber("PivotTargetRev", refrence);
+        } else {
+            SmartDashboard.putBoolean("PivotLimit", lowerLimit.get());
+        }
     }
 }
