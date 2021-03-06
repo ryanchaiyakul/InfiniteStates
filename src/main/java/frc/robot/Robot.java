@@ -18,6 +18,8 @@ import com.team2568.frc2020.fsm.teleop.TeleopLooper;
 import java.io.IOException;
 import java.nio.file.Path;
 
+import com.team2568.frc2020.Constants;
+
 // import java.io.File;
 // import java.io.IOException;
 // import java.util.ArrayList;
@@ -147,6 +149,8 @@ public class Robot extends TimedRobot {
 						ex.getStackTrace());
 				return;
 			}			
+
+			Constants.kDriveHelper.resetGyro();
 
 			Registers.kDriveAutoTrajectory.set(trajectory);
 			Registers.kDriveAutoMode.set(DriveAutoMode.kTrajectory);

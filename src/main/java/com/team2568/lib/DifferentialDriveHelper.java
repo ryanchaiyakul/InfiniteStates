@@ -4,6 +4,7 @@ import com.revrobotics.CANEncoder;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 
@@ -23,6 +24,8 @@ public class DifferentialDriveHelper {
     public void registerEncoders(CANEncoder lEncoder, CANEncoder rEncoder) {
         this.lEncoder = lEncoder;
         this.rEncoder = rEncoder;
+
+        reset(new Pose2d());
     }
 
     /**
@@ -31,9 +34,12 @@ public class DifferentialDriveHelper {
      * @param lEncoder
      * @param rEncoder
      */
-    public void update(Double lEncoder, double rEncoder) {
-        System.out.println(mGyro.getRotation2d());
-        mOdometry.update(mGyro.getRotation2d(), encoderToMeter(lEncoder), encoderToMeter(rEncoder));
+    public void update() {
+        mOdometry.update(mGyro.getRotation2d().minus(new Rotation2d(1.57)), encoderToMeter(lEncoder.getPosition()), encoderToMeter(rEncoder.getPosition()));
+    }
+
+    public void resetGyro() {
+        mGyro.reset();
     }
 
     public void reset(Pose2d pose) {
@@ -41,7 +47,6 @@ public class DifferentialDriveHelper {
             lEncoder.setPosition(0);
             rEncoder.setPosition(0);
         }
-        mGyro.reset();
         mOdometry.resetPosition(pose, mGyro.getRotation2d());
     }
 

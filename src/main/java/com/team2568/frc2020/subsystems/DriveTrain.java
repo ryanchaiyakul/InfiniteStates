@@ -167,7 +167,7 @@ public class DriveTrain extends Subsystem {
         Registers.kDriveRightVelocity.set(getRightVelocity());
 
         if (Registers.kReal.get()) {
-            Constants.kDriveHelper.update(getLeftPosition(), getRightPosition());
+            Constants.kDriveHelper.update();
 
             Registers.kDrivePose2d.set(Constants.kDriveHelper.getPose());
         } else {
