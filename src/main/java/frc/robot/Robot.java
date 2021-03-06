@@ -28,6 +28,7 @@ import java.nio.file.Path;
 // import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team2568.frc2020.ILooper;
 import com.team2568.frc2020.subsystems.SubsystemLooper;
+import com.team2568.frc2020.subsystems.DriveTrain.DriveMode;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -146,6 +147,7 @@ public class Robot extends TimedRobot {
 
 			Registers.kDriveAutoTrajectory.set(trajectory);
 			Registers.kDriveAutoMode.set(DriveAutoMode.kTrajectory);
+			Registers.kDriveMode.set(DriveMode.kDifferential);
 		}
 	}
 
