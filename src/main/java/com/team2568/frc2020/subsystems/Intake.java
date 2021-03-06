@@ -63,15 +63,15 @@ public class Intake extends Subsystem {
 
         if (Registers.kReal.get()) {
             switch (Registers.kIntakeValue.get()) {
-                case kOff:
-                    lMotor.set(0);
-                    break;
-                case kForward:
-                    lMotor.set(Constants.kIntakeSpeed);
-                    break;
-                case kReverse:
-                    lMotor.set(-Constants.kIntakeSpeed);
-                    break;
+            case kOff:
+                lMotor.set(0);
+                break;
+            case kForward:
+                lMotor.set(Constants.kIntakeSpeed);
+                break;
+            case kReverse:
+                lMotor.set(-Constants.kIntakeSpeed);
+                break;
             }
         }
     }
@@ -85,7 +85,9 @@ public class Intake extends Subsystem {
     }
 
     public void outputTelemetry() {
-        SmartDashboard.putBoolean("IntakeDown", Registers.kIntakeDown.get());
-        SmartDashboard.putString("IntakeValue", Registers.kIntakeValue.get().toString());
+        if (!Registers.kReal.get()) {
+            SmartDashboard.putBoolean("IntakeDown", Registers.kIntakeDown.get());
+            SmartDashboard.putString("IntakeValue", Registers.kIntakeValue.get().toString());
+        }
     }
 }

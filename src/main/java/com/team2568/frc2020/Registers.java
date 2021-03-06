@@ -21,7 +21,10 @@ import com.team2568.frc2020.subsystems.DriveTrain.DriveMode;
 import com.team2568.frc2020.subsystems.Intake.IntakeValue;
 import com.team2568.frc2020.subsystems.Pivot.PivotMode;
 import com.team2568.frc2020.subsystems.Shooter.ShooterValue;
-import com.team2568.frc2020.subsystems.Tube.TubeValue;;
+import com.team2568.frc2020.subsystems.Tube.TubeValue;
+
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.trajectory.Trajectory;;
 
 /**
  * Declare global registers within this class as final constants. This class may
@@ -95,6 +98,10 @@ public class Registers {
 			0.0);
 	public static final StoppableRegister<Double> kDriveZ = new StoppableRegister<Double>(StringToValue.kDouble, 0.0,
 			0.0);
+	public static final StoppableRegister<Double> kDriveLV = new StoppableRegister<Double>(StringToValue.kDouble, 0.0,
+			0.0);
+	public static final StoppableRegister<Double> kDriveRV = new StoppableRegister<Double>(StringToValue.kDouble, 0.0,
+			0.0);
 
 	// Shooter Status Registers
 
@@ -103,6 +110,14 @@ public class Registers {
 	// Pivot Status Registers
 
 	public static final UpdateRegister<Double> kPivotRev = new UpdateRegister<Double>(StringToValue.kDouble);
+
+	// DriveTrain Status Registers
+
+	public static final UpdateRegister<Double> kDriveLeftPosition = new UpdateRegister<Double>(StringToValue.kDouble);
+	public static final UpdateRegister<Double> kDriveRightPosition = new UpdateRegister<Double>(StringToValue.kDouble);
+	public static final UpdateRegister<Double> kDriveLeftVelocity = new UpdateRegister<Double>(StringToValue.kDouble);
+	public static final UpdateRegister<Double> kDriveRightVelocity = new UpdateRegister<Double>(StringToValue.kDouble);
+	public static final UpdateRegister<Pose2d> kDrivePose2d = new UpdateRegister<Pose2d>(StringToValue.kPose2d);
 
 	// Autonomous Mode Registers
 
@@ -113,13 +128,20 @@ public class Registers {
 
 	// Autonomous Output Registers
 
-	// Pivot Registers
+	// DriveTrain Registers
+
+	public static final StoppableRegister<Trajectory> kDriveAutoTrajectory = new StoppableRegister<Trajectory>(
+			StringToValue.kTrajectory, new Trajectory(), new Trajectory());
+
+	// Pivot Status Registers
 
 	public static final UpdateRegister<Double> kPivotAutoTargetRev = new UpdateRegister<Double>(StringToValue.kDouble);
 
-	// DriveTrain Registers
+	// DriveTrain Status Registers
 
 	public static final UpdateRegister<Double> kDriveAutoDriveZ = new UpdateRegister<Double>(StringToValue.kDouble);
+	public static final UpdateRegister<Double> kDriveAutoLV = new UpdateRegister<Double>(StringToValue.kDouble);
+	public static final UpdateRegister<Double> kDriveAutoRV = new UpdateRegister<Double>(StringToValue.kDouble);
 
 	public static final List<Register<?>> kRegisters = Collections.unmodifiableList(Arrays.asList(kTelemetry, kReal,
 			kShooterState, kIntakeState, kTubeState, kPivotState, kClimbState, kDriveState, kShooterValue,

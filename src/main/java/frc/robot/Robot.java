@@ -8,26 +8,36 @@
 package frc.robot;
 
 import com.team2568.frc2020.Registers;
-import com.team2568.frc2020.commands.Processor;
-import com.team2568.frc2020.commands.Command;
-import com.team2568.frc2020.commands.CommandParser;
+// import com.team2568.frc2020.commands.Processor;
+// import com.team2568.frc2020.commands.Command;
+// import com.team2568.frc2020.commands.CommandParser;
+import com.team2568.frc2020.fsm.auto.AutoLooper;
+import com.team2568.frc2020.fsm.auto.DriveTrain.DriveAutoMode;
 import com.team2568.frc2020.fsm.teleop.TeleopLooper;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.nio.file.Path;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+// import java.io.File;
+// import java.io.IOException;
+// import java.util.ArrayList;
+// import java.util.List;
+
+// import com.fasterxml.jackson.core.JsonFactory;
+// import com.fasterxml.jackson.core.type.TypeReference;
+// import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team2568.frc2020.ILooper;
 import com.team2568.frc2020.subsystems.SubsystemLooper;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
+// import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -37,8 +47,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * project.
  */
 public class Robot extends TimedRobot {
-	private ILooper teleopLooper, subsystemLooper;
-	private Processor processor;
+	private ILooper teleopLooper, subsystemLooper, autoLooper;
+	// private Processor processor;
+	private final SendableChooser<String> mTrajectoryChooser = new SendableChooser<String>();
 
 	/**
 	 * This function is run when the robot is first started up and should be used
@@ -56,26 +67,35 @@ public class Robot extends TimedRobot {
 			Registers.kTelemetry.set(false);
 		}
 
+		// Get loopers
 		subsystemLooper = SubsystemLooper.getInstance();
 		teleopLooper = TeleopLooper.getInstance();
-		processor = Processor.getInstance();
+		autoLooper = AutoLooper.getInstance();
+		// processor = Processor.getInstance();
 
-		// Parse json program file
-		File file = new File(Filesystem.getDeployDirectory(), "example.json");
-		ObjectMapper om = new ObjectMapper(new JsonFactory());
+		// Assign auto paths
+		mTrajectoryChooser.setDefaultOption("None", null);
+		mTrajectoryChooser.addOption("Slalom", "Slalom Path");
+		mTrajectoryChooser.addOption("Barrel", "Barrel Racing Path");
+		mTrajectoryChooser.addOption("Bounche", "Bounce Path");
 
-		try {
-			List<CommandParser> parserList = om.readValue(file, new TypeReference<List<CommandParser>>() {
-			});
-			List<Command> commandList = new ArrayList<>();
+		SmartDashboard.putData("TrajectoryChooser", mTrajectoryChooser);
 
-			for (CommandParser parser : parserList) {
-				commandList.add(parser.getCommand());
-			}
-
-			processor.loadProgram(commandList);
-		} catch (IOException e) {
-		}
+		/**
+		 * // Parse json program file File file = new
+		 * File(Filesystem.getDeployDirectory(), "example.json"); ObjectMapper om = new
+		 * ObjectMapper(new JsonFactory());
+		 * 
+		 * try { List<CommandParser> parserList = om.readValue(file, new
+		 * TypeReference<List<CommandParser>>() { }); List<Command> commandList = new
+		 * ArrayList<>();
+		 * 
+		 * for (CommandParser parser : parserList) {
+		 * commandList.add(parser.getCommand()); }
+		 * 
+		 * processor.loadProgram(commandList); } catch (IOException e) { // Not sure
+		 * what to do for error }
+		 */
 	}
 
 	/**
@@ -105,10 +125,28 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void autonomousInit() {
-		processor.reset();
 		teleopLooper.stop();
 		subsystemLooper.reset();
+		autoLooper.reset();
+		// processor.reset();
 
+		Trajectory trajectory = new Trajectory();
+
+		if (mTrajectoryChooser.getSelected() != null) {
+			try {
+				Path trajectoryPath = Filesystem.getDeployDirectory().toPath()
+						.resolve(mTrajectoryChooser.getSelected() + ".wpilib.json");
+				trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
+			} catch (IOException ex) {
+				DriverStation.reportError(
+						"Unable to open trajectory: " + mTrajectoryChooser.getSelected() + ".wpilib.json",
+						ex.getStackTrace());
+				return;
+			}
+
+			Registers.kDriveAutoTrajectory.set(trajectory);
+			Registers.kDriveAutoMode.set(DriveAutoMode.kTrajectory);
+		}
 	}
 
 	/**
@@ -116,6 +154,8 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
+		Registers.kDriveLV.set(Registers.kDriveAutoLV.get());
+		Registers.kDriveRV.set(Registers.kDriveAutoRV.get());
 	}
 
 	/**
@@ -123,10 +163,10 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void teleopInit() {
-		processor.reset();
 		teleopLooper.start();
 		subsystemLooper.reset();
-
+		autoLooper.reset();
+		// processor.reset();
 	}
 
 	/**
@@ -143,7 +183,8 @@ public class Robot extends TimedRobot {
 	public void disabledInit() {
 		subsystemLooper.stop();
 		teleopLooper.stop();
-		processor.stop();
+		autoLooper.stop();
+		// processor.stop();
 	}
 
 	/**

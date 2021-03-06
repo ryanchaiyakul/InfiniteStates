@@ -6,7 +6,9 @@ import com.team2568.frc2020.Registers;
 import com.team2568.lib.drivers.SparkMaxFactory;
 
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
+import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
@@ -49,15 +51,17 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class DriveTrain extends Subsystem {
     private static DriveTrain mInstance;
 
-    private double driveL, driveR, driveF, driveZ;
+    private double driveL, driveR, driveF, driveZ, driveLV, driveRV;
 
     private CANSparkMax laMotor, lbMotor, lcMotor, raMotor, rbMotor, rcMotor;
     private SpeedControllerGroup lGroup, rGroup;
 
-    private DifferentialDrive drive;
+    private DifferentialDrive mDrive;
+
+    private PIDController mLeftController, mRightController;
 
     public static enum DriveMode {
-        kTank, kArcade, kOff;
+        kTank, kArcade, kDifferential, kOff;
     }
 
     public static DriveTrain getInstance() {
@@ -81,48 +85,114 @@ public class DriveTrain extends Subsystem {
 
             rGroup = new SpeedControllerGroup(raMotor, rbMotor, rcMotor);
 
-            drive = new DifferentialDrive(lGroup, rGroup);
+            Constants.kDriveHelper.registerEncoders(laMotor.getEncoder(), raMotor.getEncoder());
+
+            mDrive = new DifferentialDrive(lGroup, rGroup);
+
+            mLeftController = new PIDController(Constants.kDriveVelocitykP, Constants.kDriveVelocitykI,
+                    Constants.kDriveVelocitykD);
+            mRightController = new PIDController(Constants.kDriveVelocitykP, Constants.kDriveVelocitykI,
+                    Constants.kDriveVelocitykD);
         }
     }
 
     public void setOutputs() {
-        reset();
-
         driveL = applyLimit(Registers.kDriveL.get());
         driveR = applyLimit(Registers.kDriveR.get());
         driveF = applyLimit(Registers.kDriveF.get());
         driveZ = applyLimit(Registers.kDriveZ.get());
 
+        driveLV = Registers.kDriveLV.get();
+        driveRV = Registers.kDriveRV.get();
+
         if (Registers.kReal.get()) {
             switch (Registers.kDriveMode.get()) {
-                case kTank:
-                    drive.tankDrive(driveL, driveR);
-                    break;
-                case kArcade:
-                    drive.arcadeDrive(driveF, driveZ);
-                    break;
-                case kOff:
-                    drive.tankDrive(0, 0);
-                    break;
+            case kTank:
+                mDrive.tankDrive(driveL, driveR);
+                break;
+            case kArcade:
+                mDrive.arcadeDrive(driveF, driveZ);
+                break;
+            case kDifferential:
+                differentialDrive(driveLV, driveRV);
+                break;
+            case kOff:
+                mDrive.stopMotor();
+                break;
             }
         }
     }
 
-    private void reset() {
-        driveL = driveR = driveF = driveZ = 0;
+    // Speeds in MKS (Meters per second)
+    private void differentialDrive(double leftSpeed, double rightSpeed) {
+        lGroup.setVoltage(
+                mLeftController.calculate(Constants.kDriveHelper.encoderToMeter(getLeftVelocity()), leftSpeed));
+        rGroup.setVoltage(
+                mRightController.calculate(Constants.kDriveHelper.encoderToMeter(getRightVelocity()), rightSpeed));
+        mDrive.feed();
+    }
+
+    private double getLeftPosition() {
+        if (Registers.kReal.get()) {
+            return laMotor.getEncoder().getPosition();
+        }
+        return 0;
+    }
+
+    private double getRightPosition() {
+        if (Registers.kReal.get()) {
+            return laMotor.getEncoder().getPosition();
+        }
+        return 0;
+    }
+
+    private double getLeftVelocity() {
+        if (Registers.kReal.get()) {
+            return laMotor.getEncoder().getVelocity();
+        }
+        return 0;
+    }
+
+    private double getRightVelocity() {
+        if (Registers.kReal.get()) {
+            return laMotor.getEncoder().getVelocity();
+        }
+        return 0;
     }
 
     public void writeStatus() {
+        Registers.kDriveLeftPosition.set(getLeftPosition());
+        Registers.kDriveRightPosition.set(getRightPosition());
+        Registers.kDriveLeftVelocity.set(getLeftVelocity());
+        Registers.kDriveRightVelocity.set(getRightVelocity());
+
+        if (Registers.kReal.get()) {
+            Constants.kDriveHelper.update(getLeftPosition(), getRightPosition());
+
+            Registers.kDrivePose2d.set(Constants.kDriveHelper.getPose());
+        } else {
+            Registers.kDrivePose2d.set(new Pose2d());
+        }
+
     }
 
     public void writeDashboard() {
     }
 
     public void outputTelemetry() {
-        SmartDashboard.putString("DriveMode", Registers.kDriveMode.get().toString());
-        SmartDashboard.putNumber("DriveL", driveL);
-        SmartDashboard.putNumber("DriveR", driveR);
-        SmartDashboard.putNumber("DriveF", driveF);
-        SmartDashboard.putNumber("DriveZ", driveZ);
+        if (!Registers.kReal.get()) {
+            SmartDashboard.putString("DriveMode", Registers.kDriveMode.get().toString());
+            SmartDashboard.putNumber("DriveL", driveL);
+            SmartDashboard.putNumber("DriveR", driveR);
+            SmartDashboard.putNumber("DriveF", driveF);
+            SmartDashboard.putNumber("DriveZ", driveZ);
+            SmartDashboard.putNumber("DriveLV", driveLV);
+            SmartDashboard.putNumber("DriveRV", driveRV);
+        } else {
+            SmartDashboard.putNumber("DriveLeftPosition", getLeftPosition());
+            SmartDashboard.putNumber("DriveRightPosition", getRightPosition());
+            SmartDashboard.putNumber("DriveLeftVelocity", getLeftVelocity());
+            SmartDashboard.putNumber("DriveRightVelocity", getRightVelocity());
+        }
     }
 }

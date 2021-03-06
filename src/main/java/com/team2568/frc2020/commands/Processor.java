@@ -60,7 +60,7 @@ public class Processor extends ILooper {
         registerStoppableRegisters(Registers.kClimbExtend, Registers.kClimbSpeed);
         registerStoppableRegisters(Registers.kIntakeDown, Registers.kIntakeValue);
         registerStoppableRegisters(Registers.kDriveMode, Registers.kDriveF, Registers.kDriveZ, Registers.kDriveL,
-                Registers.kDriveR);
+                Registers.kDriveR, Registers.kDriveLV, Registers.kDriveRV);
         registerStoppableRegisters(Registers.kPivotMode, Registers.kPivotSpeed, Registers.kPivotTargetRev);
         registerStoppableRegisters(Registers.kShooterClosed, Registers.kShooterValue);
         registerStoppableRegisters(Registers.kTubeValue);

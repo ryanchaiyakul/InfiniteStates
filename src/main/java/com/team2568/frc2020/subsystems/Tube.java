@@ -51,18 +51,18 @@ public class Tube extends Subsystem {
     public void setOutputs() {
         if (Registers.kReal.get()) {
             switch (Registers.kTubeValue.get()) {
-                case kOff:
-                    lMotor.set(0);
-                    break;
-                case kIntake:
-                    lMotor.set(Constants.kTubeIntakeSpeed);
-                    break;
-                case kShoot:
-                    lMotor.set(Constants.kTubeShootSpeed);
-                    break;
-                case kReverse:
-                    lMotor.set(-Constants.kTubeIntakeSpeed);
-                    break;
+            case kOff:
+                lMotor.set(0);
+                break;
+            case kIntake:
+                lMotor.set(Constants.kTubeIntakeSpeed);
+                break;
+            case kShoot:
+                lMotor.set(Constants.kTubeShootSpeed);
+                break;
+            case kReverse:
+                lMotor.set(-Constants.kTubeIntakeSpeed);
+                break;
             }
         }
     }
@@ -74,6 +74,8 @@ public class Tube extends Subsystem {
     }
 
     public void outputTelemetry() {
-        SmartDashboard.putString("TubeValue", Registers.kTubeValue.get().toString());
+        if (!Registers.kReal.get()) {
+            SmartDashboard.putString("TubeValue", Registers.kTubeValue.get().toString());
+        }
     }
 }

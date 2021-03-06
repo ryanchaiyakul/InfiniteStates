@@ -47,7 +47,7 @@ public class Shooter extends Subsystem {
     private SparkMaxFactory.Config mConfig = new SparkMaxFactory.Config();
 
     public enum ShooterValue {
-        kOff, kShoot, kTurn;
+        kOff, kHigh, kLow, kTurn;
     }
 
     public static Shooter getInstance() {
@@ -74,15 +74,18 @@ public class Shooter extends Subsystem {
     public void setOutputs() {
         if (Registers.kReal.get()) {
             switch (Registers.kShooterValue.get()) {
-                case kOff:
-                    lMotor.set(0);
-                    break;
-                case kShoot:
-                    lMotor.getPIDController().setReference(Constants.kShooterRPM, ControlType.kVelocity);
-                    break;
-                case kTurn:
-                    lMotor.set(Constants.kShooterTurnSpeed);
-                    break;
+            case kOff:
+                lMotor.set(0);
+                break;
+            case kHigh:
+                lMotor.getPIDController().setReference(Constants.kShooterRPM, ControlType.kVelocity);
+                break;
+            case kLow:
+                lMotor.getPIDController().setReference(Constants.kShooterLowRPM, ControlType.kVelocity);
+                break;
+            case kTurn:
+                lMotor.set(Constants.kShooterTurnSpeed);
+                break;
             }
         }
 
@@ -106,11 +109,15 @@ public class Shooter extends Subsystem {
     }
 
     public void writeDashboard() {
-        SmartDashboard.putNumber("ShooterRPM", getRPM());
+        if (Registers.kReal.get()) {
+            SmartDashboard.putNumber("ShooterRPM", getRPM());
+        }
     }
 
     public void outputTelemetry() {
-        SmartDashboard.putBoolean("ShooterClosed", Registers.kShooterClosed.get());
-        SmartDashboard.putString("ShooterValue", Registers.kShooterValue.get().toString());
+        if (!Registers.kReal.get()) {
+            SmartDashboard.putBoolean("ShooterClosed", Registers.kShooterClosed.get());
+            SmartDashboard.putString("ShooterValue", Registers.kShooterValue.get().toString());
+        }
     }
 }

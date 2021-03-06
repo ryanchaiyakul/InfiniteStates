@@ -14,6 +14,9 @@ import com.team2568.frc2020.subsystems.Pivot.PivotMode;
 import com.team2568.frc2020.subsystems.Shooter.ShooterValue;
 import com.team2568.frc2020.subsystems.Tube.TubeValue;
 
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.trajectory.Trajectory;
+
 public interface StringToValue<T> {
     public T convert(String s);
 
@@ -133,6 +136,20 @@ public interface StringToValue<T> {
         @Override
         public DriveAutoMode convert(String s) {
             return DriveAutoMode.valueOf(s);
+        }
+    };
+
+    public static StringToValue<Pose2d> kPose2d = new StringToValue<Pose2d>() {
+        @Override
+        public Pose2d convert(String s) {
+            return new Pose2d();
+        }
+    };
+
+    public static StringToValue<Trajectory> kTrajectory = new StringToValue<Trajectory>() {
+        @Override
+        public Trajectory convert(String s) {
+            return new Trajectory();
         }
     };
 }

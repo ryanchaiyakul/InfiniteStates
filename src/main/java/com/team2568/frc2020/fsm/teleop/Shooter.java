@@ -38,44 +38,51 @@ public class Shooter extends FSM {
         nState = Registers.kShooterState.get();
 
         switch (Registers.kShooterState.get()) {
-            case OFF:
-                rpm = ShooterValue.kOff;
-                close = true;
+        case OFF:
+            rpm = ShooterValue.kOff;
+            close = true;
 
-                if (Constants.kOperatorController.getRightTrigger()) {
-                    nState = ShooterState.SPIN;
+            if (Constants.kOperatorController.getRightTrigger()) {
+                nState = ShooterState.SPIN;
+                mStart = 0;
+            }
+            break;
+        case SHOOT:
+            rpm = ShooterValue.kHigh;
+            if (Constants.kOperatorController.getBackButton()) {
+                rpm = ShooterValue.kHigh;
+            }
+
+            close = false;
+
+            if (!Constants.kOperatorController.getRightTrigger()) {
+                nState = ShooterState.OFF;
+            }
+            break;
+        case SPIN:
+            rpm = ShooterValue.kHigh;
+            if (Constants.kOperatorController.getBackButton()) {
+                rpm = ShooterValue.kHigh;
+            }
+            close = true;
+
+            if (Constants.kOperatorController.getRightTrigger()) {
+                if (mStart == 0) {
+                    mStart = Timer.getFPGATimestamp();
+                }
+                if (Timer.getFPGATimestamp() - mStart > Constants.kShooterSpinTime) {
+                    nState = ShooterState.SHOOT;
                     mStart = 0;
                 }
-                break;
-            case SHOOT:
-                rpm = ShooterValue.kShoot;
-                close = false;
-
-                if (!Constants.kOperatorController.getRightTrigger()) {
-                    nState = ShooterState.OFF;
-                }
-                break;
-            case SPIN:
-                rpm = ShooterValue.kShoot;
-                close = true;
-
-                if (Constants.kOperatorController.getRightTrigger()) {
-                    if (mStart == 0) {
-                        mStart = Timer.getFPGATimestamp();
-                    }
-                    if (Timer.getFPGATimestamp() - mStart > Constants.kShooterSpinTime) {
-                        nState = ShooterState.SHOOT;
-                        mStart = 0;
-                    }
-                } else {
-                    nState = ShooterState.OFF;
-                    mStart = 0;
-                }
-                break;
-            case STOP:
-                rpm = ShooterValue.kOff;
-                close = true;
-                break;
+            } else {
+                nState = ShooterState.OFF;
+                mStart = 0;
+            }
+            break;
+        case STOP:
+            rpm = ShooterValue.kOff;
+            close = true;
+            break;
         }
 
         Registers.kShooterValue.set(rpm);

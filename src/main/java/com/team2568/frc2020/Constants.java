@@ -1,7 +1,12 @@
 package com.team2568.frc2020;
 
 import com.team2568.frc2020.fsm.auto.Pivot.PivotAlgorithmMode;
+import com.team2568.lib.DifferentialDriveHelper;
 import com.team2568.lib.limelight.Distance;
+
+import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
 
 // All physical constants are in MKS and radians
 public class Constants {
@@ -63,6 +68,7 @@ public class Constants {
 
 	// Shooter Constants
 	public static final double kShooterRPM = 4500;
+	public static final double kShooterLowRPM = 3500;
 	public static final double kShooterTurnSpeed = 500;
 	public static final double kShooterSpinTime = 0.7;
 
@@ -107,7 +113,7 @@ public class Constants {
 	// Drive Constants
 	public static final double kDriveSlowPower = 0.4;
 	public static final double kDriveRegularPower = 0.7;
-	public static final double kDriveTurboPower = 0.9;
+	public static final double kDriveTurboPower = 0.95;
 
 	public static final double kDrivekP = 0.28;
 	public static final double kDrivekI = 0;
@@ -115,19 +121,51 @@ public class Constants {
 
 	public static final double kDriveMaxRotationSpeed = 0.23;
 
+	public static final double kVolt = 0.179;
+	public static final double kVoltSecondPerMeter = 2.71;
+	public static final double kVoltSecondSquaredPerMeter = 0.364;
+
+	public static final double kDriveVelocitykP = 2.3;
+	public static final double kDriveVelocitykI = 0;
+	public static final double kDriveVelocitykD = 0;
+
+	public static final double kDrivekB = 2.0;
+	public static final double kDrivekZeta = 0.7;
+
 	// LimeLight Constants
 	public static final int kUpperPort = 1;
 
 	// Physical Constants
-	public static final double kShooterVelocity = 30.48;
 
-	public static final double kUpperPortHeight = 2.1425; // Height to the center of the port for theta calculations
-	public static final double kUpperPortHeightDistance = 2.1425; // Lower than actual height b/c bounding box is lower
+	// Motor Constants
+	public static final double kTicksToRevolution = 42;
+
+	// Shooter Constants
+	public static final double kShooterVelocity = 30.48;
+	public static final double kShooterLowVelocity = 25;
+
+	// Pivot Constants
 	public static final double kPivotToLimeLight = 0.7408926; // The horizontal distance from the pivot point of the
 																// tube to the limelight
 	public static final double kTubeLength = 0.861401122; // The length of the tube from the pivot point to the exit
 															// point
 	public static final double kPivotHeight = 0.1676908; // The height of the pivot point of the tube off the ground
+
+	// DriveTrain Constants
+	public static final double kTrackWidth = 0.53975;
+	public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(kTrackWidth);
+
+	public static final double kMaxSpeed = 0;
+	public static final double kMaxAcceleration = 0;
+
+	public static final double kWheelDiameter = 0.1524;
+	public static final double kDistancePerRevolution = Math.PI * kWheelDiameter;
+
+	public static final DifferentialDriveHelper kDriveHelper = new DifferentialDriveHelper(kTicksToRevolution);
+
+	// Upper Port Constants
+	public static final double kUpperPortHeight = 2.1425; // Height to the center of the port for theta calculations
+	public static final double kUpperPortHeightDistance = 2.1425; // Lower than actual height b/c bounding box is lower
 
 	public static final double kG = 9.81; // Gravity Constant in MKS units
 
@@ -137,4 +175,11 @@ public class Constants {
 
 	public static final Distance kForwardDistance = new Distance(kForwardLLMountingHeight, kForwardLLMountingAngle,
 			kUpperPortHeightDistance);
+
+	// Trajectory Constants
+	public static final double kMaxVoltage = 10;
+	public static final SimpleMotorFeedforward kDriveFeedForward = new SimpleMotorFeedforward(Constants.kVolt,
+			Constants.kVoltSecondPerMeter, Constants.kVoltSecondSquaredPerMeter);
+	public static final DifferentialDriveVoltageConstraint kVoltageConstraint = new DifferentialDriveVoltageConstraint(
+			kDriveFeedForward, kDriveKinematics, kMaxVoltage);
 }

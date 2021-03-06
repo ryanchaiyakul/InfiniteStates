@@ -99,12 +99,16 @@ public class Climb extends Subsystem {
     }
 
     public void writeDashboard() {
-        SmartDashboard.putNumber("ClimbLCurrent", getLCurrent());
-        SmartDashboard.putNumber("ClimbRCurrent", getRCurrent());
+        if (Registers.kReal.get()) {
+            SmartDashboard.putNumber("ClimbLCurrent", getLCurrent());
+            SmartDashboard.putNumber("ClimbRCurrent", getRCurrent());
+        }
     }
 
     public void outputTelemetry() {
-        SmartDashboard.putBoolean("ClimbExtended", Registers.kClimbExtend.get());
-        SmartDashboard.putNumber("ClimbSpeed", speed);
+        if (!Registers.kReal.get()) {
+            SmartDashboard.putBoolean("ClimbExtended", Registers.kClimbExtend.get());
+            SmartDashboard.putNumber("ClimbSpeed", speed);
+        }
     }
 }
