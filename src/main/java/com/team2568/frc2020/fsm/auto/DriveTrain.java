@@ -72,6 +72,7 @@ public class DriveTrain extends FSM {
 
             if (mStart == 0) {
                 mStart = Timer.getFPGATimestamp();
+                Constants.kDriveHelper.reset(mTrajectory.getInitialPose());
             }
 
             DifferentialDriveWheelSpeeds wheelSpeeds = getSpeed();
@@ -94,6 +95,7 @@ public class DriveTrain extends FSM {
             return new DifferentialDriveWheelSpeeds();
         }
 
+        // System.out.println(Registers.kDrivePose2d.get());
         ChassisSpeeds chassisSpeed = mRamController.calculate(Registers.kDrivePose2d.get(),
                 mTrajectory.sample(Timer.getFPGATimestamp() - mStart));
         return Constants.kDriveKinematics.toWheelSpeeds(chassisSpeed);

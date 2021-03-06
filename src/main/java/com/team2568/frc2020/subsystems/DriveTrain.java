@@ -167,7 +167,7 @@ public class DriveTrain extends Subsystem {
         Registers.kDriveRightVelocity.set(getRightVelocity());
 
         if (Registers.kReal.get()) {
-            Constants.kDriveHelper.update(getLeftPosition(), getRightPosition());
+            Constants.kDriveHelper.update();
 
             Registers.kDrivePose2d.set(Constants.kDriveHelper.getPose());
         } else {
@@ -189,10 +189,10 @@ public class DriveTrain extends Subsystem {
             SmartDashboard.putNumber("DriveLV", driveLV);
             SmartDashboard.putNumber("DriveRV", driveRV);
         } else {
-            SmartDashboard.putNumber("DriveLeftPosition", getLeftPosition());
-            SmartDashboard.putNumber("DriveRightPosition", getRightPosition());
-            SmartDashboard.putNumber("DriveLeftVelocity", getLeftVelocity());
-            SmartDashboard.putNumber("DriveRightVelocity", getRightVelocity());
+            SmartDashboard.putNumber("DriveLeftPosition", Constants.kDriveHelper.encoderToMeter(getLeftPosition()));
+            SmartDashboard.putNumber("DriveRightPosition", Constants.kDriveHelper.encoderToMeter(getRightPosition()));
+            SmartDashboard.putNumber("DriveLeftVelocity", Constants.kDriveHelper.encoderToMeter(getLeftVelocity()));
+            SmartDashboard.putNumber("DriveRightVelocity", Constants.kDriveHelper.encoderToMeter(getRightVelocity()));
         }
     }
 }

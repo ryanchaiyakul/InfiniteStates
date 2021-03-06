@@ -18,6 +18,8 @@ import com.team2568.frc2020.fsm.teleop.TeleopLooper;
 import java.io.IOException;
 import java.nio.file.Path;
 
+import com.team2568.frc2020.Constants;
+
 // import java.io.File;
 // import java.io.IOException;
 // import java.util.ArrayList;
@@ -28,6 +30,7 @@ import java.nio.file.Path;
 // import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team2568.frc2020.ILooper;
 import com.team2568.frc2020.subsystems.SubsystemLooper;
+import com.team2568.frc2020.subsystems.DriveTrain.DriveMode;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -61,11 +64,13 @@ public class Robot extends TimedRobot {
 		// Registers.kReal.set(true);
 		SmartDashboard.putBoolean("isReal", Registers.kReal.get());
 
-		if (!Registers.kReal.get()) {
-			Registers.kTelemetry.set(true);
-		} else {
-			Registers.kTelemetry.set(false);
-		}
+		Registers.kTelemetry.set(true);
+
+		//if (!Registers.kReal.get()) {
+		//	Registers.kTelemetry.set(true);
+		//} else {
+		//	Registers.kTelemetry.set(false);
+		//}
 
 		// Get loopers
 		subsystemLooper = SubsystemLooper.getInstance();
@@ -78,6 +83,7 @@ public class Robot extends TimedRobot {
 		mTrajectoryChooser.addOption("Slalom", "Slalom Path");
 		mTrajectoryChooser.addOption("Barrel", "Barrel Racing Path");
 		mTrajectoryChooser.addOption("Bounche", "Bounce Path");
+		mTrajectoryChooser.addOption("Straight", "Straight Line");
 
 		SmartDashboard.putData("TrajectoryChooser", mTrajectoryChooser);
 
@@ -142,10 +148,13 @@ public class Robot extends TimedRobot {
 						"Unable to open trajectory: " + mTrajectoryChooser.getSelected() + ".wpilib.json",
 						ex.getStackTrace());
 				return;
-			}
+			}			
+
+			Constants.kDriveHelper.resetGyro();
 
 			Registers.kDriveAutoTrajectory.set(trajectory);
 			Registers.kDriveAutoMode.set(DriveAutoMode.kTrajectory);
+			Registers.kDriveMode.set(DriveMode.kDifferential);
 		}
 	}
 
@@ -154,8 +163,11 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
+		Registers.kDriveMode.set(DriveMode.kDifferential);
 		Registers.kDriveLV.set(Registers.kDriveAutoLV.get());
 		Registers.kDriveRV.set(Registers.kDriveAutoRV.get());
+
+		// System.out.println(Registers.kDriveAutoLV.get() + "," + Registers.kDriveAutoRV.get());
 	}
 
 	/**
