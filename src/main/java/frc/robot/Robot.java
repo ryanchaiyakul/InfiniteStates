@@ -81,6 +81,7 @@ public class Robot extends TimedRobot {
 		mTrajectoryChooser.addOption("Slalom", "Slalom Path");
 		mTrajectoryChooser.addOption("Barrel", "Barrel Racing Path");
 		mTrajectoryChooser.addOption("Bounche", "Bounce Path");
+		mTrajectoryChooser.addOption("Straight", "Straight Line");
 
 		SmartDashboard.putData("TrajectoryChooser", mTrajectoryChooser);
 
@@ -162,7 +163,7 @@ public class Robot extends TimedRobot {
 		Registers.kDriveLV.set(Registers.kDriveAutoLV.get());
 		Registers.kDriveRV.set(Registers.kDriveAutoRV.get());
 
-		System.out.println(Registers.kDriveAutoLV.get() + "," + Registers.kDriveAutoRV.get());
+		// System.out.println(Registers.kDriveAutoLV.get() + "," + Registers.kDriveAutoRV.get());
 	}
 
 	/**

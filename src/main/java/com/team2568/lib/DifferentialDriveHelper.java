@@ -32,6 +32,7 @@ public class DifferentialDriveHelper {
      * @param rEncoder
      */
     public void update(Double lEncoder, double rEncoder) {
+        System.out.println(mGyro.getRotation2d());
         mOdometry.update(mGyro.getRotation2d(), encoderToMeter(lEncoder), encoderToMeter(rEncoder));
     }
 
