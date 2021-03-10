@@ -134,7 +134,7 @@ public class Pivot extends Subsystem {
             }
 
             if (Registers.kReal.get()) {
-                motor.set(-speed);
+                motor.set(speed);
             }
         }
     }

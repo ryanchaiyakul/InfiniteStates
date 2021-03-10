@@ -41,7 +41,7 @@ public class Pivot extends FSM {
             case TELEOP:
                 nMode = PivotMode.kTeleop;
                 targetRev = 0;
-                joystick = -Constants.kOperatorController.getLeftDeadzoneY();
+                joystick = Constants.kOperatorController.getLeftDeadzoneY();
 
                 if (joystick == 0) {
                     if (Constants.kOperatorController.getRightStickButton()) {

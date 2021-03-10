@@ -53,7 +53,11 @@ public class Shooter extends FSM {
                 rpm = ShooterValue.kHigh;
             }
 
-            close = false;
+            if (Constants.kOperatorController.getXButton()) {
+                close = false;
+            } else {
+                close = true;
+            }
 
             if (!Constants.kOperatorController.getRightTrigger()) {
                 nState = ShooterState.OFF;
