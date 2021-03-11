@@ -8,33 +8,23 @@
 package frc.robot;
 
 import com.team2568.frc2020.Registers;
-// import com.team2568.frc2020.commands.Processor;
-// import com.team2568.frc2020.commands.Command;
-// import com.team2568.frc2020.commands.CommandParser;
 import com.team2568.frc2020.fsm.auto.AutoLooper;
 import com.team2568.frc2020.fsm.auto.DriveTrain.DriveAutoMode;
 import com.team2568.frc2020.fsm.teleop.TeleopLooper;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.regex.Pattern;
 
 import com.team2568.frc2020.Constants;
 
-// import java.io.File;
-// import java.io.IOException;
-// import java.util.ArrayList;
-// import java.util.List;
-
-// import com.fasterxml.jackson.core.JsonFactory;
-// import com.fasterxml.jackson.core.type.TypeReference;
-// import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team2568.frc2020.ILooper;
 import com.team2568.frc2020.subsystems.SubsystemLooper;
 import com.team2568.frc2020.subsystems.DriveTrain.DriveMode;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
-// import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -61,16 +51,13 @@ public class Robot extends TimedRobot {
 	@Override
 	public void robotInit() {
 		Registers.kReal.set(RobotBase.isReal());
-		// Registers.kReal.set(true);
 		SmartDashboard.putBoolean("isReal", Registers.kReal.get());
 
-		Registers.kTelemetry.set(true);
-
-		//if (!Registers.kReal.get()) {
-		//	Registers.kTelemetry.set(true);
-		//} else {
-		//	Registers.kTelemetry.set(false);
-		//}
+		if (!Registers.kReal.get()) {
+			Registers.kTelemetry.set(true);
+		} else {
+			Registers.kTelemetry.set(false);
+		}
 
 		// Get loopers
 		subsystemLooper = SubsystemLooper.getInstance();
@@ -80,28 +67,19 @@ public class Robot extends TimedRobot {
 
 		// Assign auto paths
 		mTrajectoryChooser.setDefaultOption("None", null);
-		mTrajectoryChooser.addOption("Slalom", "Slalom Path");
-		mTrajectoryChooser.addOption("Barrel", "Barrel Racing Path");
-		mTrajectoryChooser.addOption("Bounche", "Bounce Path");
-		mTrajectoryChooser.addOption("Straight", "Straight Line");
+		for (final File fileEntry : Filesystem.getDeployDirectory().listFiles()) {
+			if (!fileEntry.isDirectory()) {
+				String filePath = fileEntry.getName();
+				String[] splitPath = filePath.split(Pattern.quote("."));
+				if (splitPath.length == 3) {
+					if (splitPath[1].equals("wpilib")) {
+						mTrajectoryChooser.addOption(splitPath[0], filePath);
+					}
+				}
+			}
+		}
 
 		SmartDashboard.putData("TrajectoryChooser", mTrajectoryChooser);
-
-		/**
-		 * // Parse json program file File file = new
-		 * File(Filesystem.getDeployDirectory(), "example.json"); ObjectMapper om = new
-		 * ObjectMapper(new JsonFactory());
-		 * 
-		 * try { List<CommandParser> parserList = om.readValue(file, new
-		 * TypeReference<List<CommandParser>>() { }); List<Command> commandList = new
-		 * ArrayList<>();
-		 * 
-		 * for (CommandParser parser : parserList) {
-		 * commandList.add(parser.getCommand()); }
-		 * 
-		 * processor.loadProgram(commandList); } catch (IOException e) { // Not sure
-		 * what to do for error }
-		 */
 	}
 
 	/**
@@ -141,14 +119,13 @@ public class Robot extends TimedRobot {
 		if (mTrajectoryChooser.getSelected() != null) {
 			try {
 				Path trajectoryPath = Filesystem.getDeployDirectory().toPath()
-						.resolve(mTrajectoryChooser.getSelected() + ".wpilib.json");
+						.resolve(mTrajectoryChooser.getSelected());
 				trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
 			} catch (IOException ex) {
-				DriverStation.reportError(
-						"Unable to open trajectory: " + mTrajectoryChooser.getSelected() + ".wpilib.json",
+				DriverStation.reportError("Unable to open trajectory: " + mTrajectoryChooser.getSelected(),
 						ex.getStackTrace());
 				return;
-			}			
+			}
 
 			Constants.kDriveHelper.resetGyro();
 
@@ -163,11 +140,11 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
-		Registers.kDriveMode.set(DriveMode.kDifferential);
 		Registers.kDriveLV.set(Registers.kDriveAutoLV.get());
 		Registers.kDriveRV.set(Registers.kDriveAutoRV.get());
 
-		// System.out.println(Registers.kDriveAutoLV.get() + "," + Registers.kDriveAutoRV.get());
+		// System.out.println(Registers.kDriveAutoLV.get() + "," +
+		// Registers.kDriveAutoRV.get());
 	}
 
 	/**

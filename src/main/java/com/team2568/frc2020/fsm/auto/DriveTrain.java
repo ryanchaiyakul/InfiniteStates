@@ -22,7 +22,7 @@ public class DriveTrain extends FSM {
     private double tx;
     private double driveZ;
 
-    private PIDController mController;
+    private PIDController mAlignController, mVelocityController;
 
     private double mStart;
 
@@ -44,7 +44,9 @@ public class DriveTrain extends FSM {
 
     private DriveTrain() {
         mLimeLight = new LimeLight("limelight");
-        mController = new PIDController(Constants.kDrivekP, Constants.kDrivekI, Constants.kDrivekD);
+        mAlignController = new PIDController(Constants.kDriveAlignkP, Constants.kDriveAlignkI, Constants.kDriveAlignkD);
+        mVelocityController = new PIDController(Constants.kDriveVelocitykP, Constants.kDriveVelocitykI,
+                Constants.kDriveVelocitykD);
         mRamController = new RamseteController(Constants.kDrivekB, Constants.kDrivekZeta);
     };
 
@@ -58,7 +60,7 @@ public class DriveTrain extends FSM {
             driveRV = 0;
 
             // Do not reset controller while in operations
-            mController.reset();
+            mAlignController.reset();
             mStart = 0;
             break;
         case kTarget:
@@ -76,8 +78,10 @@ public class DriveTrain extends FSM {
             }
 
             DifferentialDriveWheelSpeeds wheelSpeeds = getSpeed();
-            driveLV = wheelSpeeds.leftMetersPerSecond;
-            driveRV = wheelSpeeds.rightMetersPerSecond;
+            driveLV = getVoltage(Constants.kDriveHelper.encoderToMeter(Registers.kDriveLeftVelocity.get()),
+                    wheelSpeeds.leftMetersPerSecond);
+            driveRV = getVoltage(Constants.kDriveHelper.encoderToMeter(Registers.kDriveRightVelocity.get()),
+                    wheelSpeeds.rightMetersPerSecond);
             break;
         }
         Registers.kDriveAutoDriveZ.set(driveZ);
@@ -86,7 +90,7 @@ public class DriveTrain extends FSM {
     }
 
     private double getDriveZ() {
-        return MathUtil.clamp(mController.calculate(tx, 0), -Constants.kDriveMaxRotationSpeed,
+        return MathUtil.clamp(mAlignController.calculate(tx, 0), -Constants.kDriveMaxRotationSpeed,
                 Constants.kDriveMaxRotationSpeed);
     }
 
@@ -95,10 +99,24 @@ public class DriveTrain extends FSM {
             return new DifferentialDriveWheelSpeeds();
         }
 
-        // System.out.println(Registers.kDrivePose2d.get());
         ChassisSpeeds chassisSpeed = mRamController.calculate(Registers.kDrivePose2d.get(),
                 mTrajectory.sample(Timer.getFPGATimestamp() - mStart));
         return Constants.kDriveKinematics.toWheelSpeeds(chassisSpeed);
+    }
+
+    /**
+     * Calcuates a voltage value with both PID and Feedforward components. The final
+     * output is clamped by the maximum voltage
+     * 
+     * @param actualSpeed
+     * @param referenceSpeed
+     * @return
+     */
+    private double getVoltage(Double actualSpeed, Double referenceSpeed) {
+        return MathUtil.clamp(
+                mVelocityController.calculate(referenceSpeed, Constants.kDriveHelper.encoderToMeter(actualSpeed))
+                        + Constants.kDriveFeedForward.calculate(referenceSpeed),
+                -Constants.kMaxVoltage, Constants.kMaxVoltage);
     }
 
     public void writeDashboard() {

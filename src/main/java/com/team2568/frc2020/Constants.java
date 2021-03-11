@@ -115,9 +115,9 @@ public class Constants {
 	public static final double kDriveRegularPower = 0.7;
 	public static final double kDriveTurboPower = 0.95;
 
-	public static final double kDrivekP = 0.28;
-	public static final double kDrivekI = 0;
-	public static final double kDrivekD = 0.055;
+	public static final double kDriveAlignkP = 0.28;
+	public static final double kDriveAlignkI = 0;
+	public static final double kDriveAlignkD = 0.055;
 
 	public static final double kDriveMaxRotationSpeed = 0.23;
 
@@ -160,8 +160,10 @@ public class Constants {
 
 	public static final double kWheelDiameter = 0.1524;
 	public static final double kDistancePerRevolution = Math.PI * kWheelDiameter;
+	public static final double kGearReduction = 10.3846153846;
 
-	public static final DifferentialDriveHelper kDriveHelper = new DifferentialDriveHelper(kDistancePerRevolution/kTicksToRevolution);
+	public static final DifferentialDriveHelper kDriveHelper = new DifferentialDriveHelper(
+			(kDistancePerRevolution / kTicksToRevolution) / kGearReduction);
 
 	// Upper Port Constants
 	public static final double kUpperPortHeight = 2.1425; // Height to the center of the port for theta calculations
@@ -177,7 +179,7 @@ public class Constants {
 			kUpperPortHeightDistance);
 
 	// Trajectory Constants
-	public static final double kMaxVoltage = 10;
+	public static final double kMaxVoltage = 7;
 	public static final SimpleMotorFeedforward kDriveFeedForward = new SimpleMotorFeedforward(Constants.kVolt,
 			Constants.kVoltSecondPerMeter, Constants.kVoltSecondSquaredPerMeter);
 	public static final DifferentialDriveVoltageConstraint kVoltageConstraint = new DifferentialDriveVoltageConstraint(
