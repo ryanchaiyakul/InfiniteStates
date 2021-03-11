@@ -3,7 +3,6 @@ package com.team2568.frc2020.fsm.auto;
 import com.team2568.frc2020.Constants;
 import com.team2568.frc2020.Registers;
 import com.team2568.frc2020.fsm.FSM;
-import com.team2568.lib.limelight.LimeLight;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -18,8 +17,6 @@ public class Pivot extends FSM {
     private static Pivot mInstance;
 
     private double targetRev;
-
-    private final LimeLight mLimeLight;
 
     private double ty;
     private double distance;
@@ -40,7 +37,6 @@ public class Pivot extends FSM {
     }
 
     private Pivot() {
-        mLimeLight = new LimeLight();
     }
 
     public void compute() {
@@ -48,12 +44,12 @@ public class Pivot extends FSM {
         update();
 
         switch (Registers.kPivotAutoMode.get()) {
-            case kOff:
-                targetRev = 0;
-                break;
-            case kTarget:
-                targetRev = getTargetRev();
-                break;
+        case kOff:
+            targetRev = 0;
+            break;
+        case kTarget:
+            targetRev = getTargetRev();
+            break;
         }
 
         Registers.kPivotAutoTargetRev.set(targetRev);
@@ -66,11 +62,11 @@ public class Pivot extends FSM {
     public double getTargetRev() {
         double theta;
         switch (Constants.kPivotAlgorithmMode) {
-            case kIterate:
-                theta = iterative();
-                break;
-            default:
-                theta = 0;
+        case kIterate:
+            theta = iterative();
+            break;
+        default:
+            theta = 0;
         }
         return toRev(theta);
     }
@@ -129,9 +125,9 @@ public class Pivot extends FSM {
      * Update distance and ty from LimeLight
      */
     public void update() {
-        mLimeLight.setPipeline(Constants.kUpperPort);
+        Constants.kFrontLL.setPipeline(Constants.kUpperPort);
 
-        ty = mLimeLight.getTy();
+        ty = Constants.kFrontLL.getTy();
         distance = Constants.kForwardDistance.getDistance(ty);
     }
 

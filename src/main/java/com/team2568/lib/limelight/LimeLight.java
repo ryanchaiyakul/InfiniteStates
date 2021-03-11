@@ -6,10 +6,6 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 public class LimeLight {
     private NetworkTable mNT;
 
-    public LimeLight() {
-        this("limelight");
-    }
-
     public LimeLight(String name) {
         mNT = NetworkTableInstance.getDefault().getTable(name);
     }

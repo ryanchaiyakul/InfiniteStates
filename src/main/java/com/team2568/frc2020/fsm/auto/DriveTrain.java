@@ -3,11 +3,11 @@ package com.team2568.frc2020.fsm.auto;
 import com.team2568.frc2020.Constants;
 import com.team2568.frc2020.Registers;
 import com.team2568.frc2020.fsm.FSM;
-import com.team2568.lib.limelight.LimeLight;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.RamseteController;
+import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -16,8 +16,6 @@ import edu.wpi.first.wpiutil.math.MathUtil;
 
 public class DriveTrain extends FSM {
     private static DriveTrain mInstance;
-
-    private LimeLight mLimeLight;
 
     private double tx;
     private double driveZ;
@@ -30,6 +28,7 @@ public class DriveTrain extends FSM {
     private double driveLV, driveRV;
 
     private RamseteController mRamController;
+    private SimpleMotorFeedforward mVelocityFeedForward;
 
     public enum DriveAutoMode {
         kOff, kTarget, kTrajectory;
@@ -43,10 +42,12 @@ public class DriveTrain extends FSM {
     }
 
     private DriveTrain() {
-        mLimeLight = new LimeLight("limelight");
         mAlignController = new PIDController(Constants.kDriveAlignkP, Constants.kDriveAlignkI, Constants.kDriveAlignkD);
+
         mVelocityController = new PIDController(Constants.kDriveVelocitykP, Constants.kDriveVelocitykI,
                 Constants.kDriveVelocitykD);
+        mVelocityFeedForward = new SimpleMotorFeedforward(Constants.kVolt, Constants.kVoltSecondPerMeter,
+                Constants.kVoltSecondSquaredPerMeter);
         mRamController = new RamseteController(Constants.kDrivekB, Constants.kDrivekZeta);
     };
 
@@ -115,7 +116,7 @@ public class DriveTrain extends FSM {
     private double getVoltage(Double actualSpeed, Double referenceSpeed) {
         return MathUtil.clamp(
                 mVelocityController.calculate(referenceSpeed, Constants.kDriveHelper.encoderToMeter(actualSpeed))
-                        + Constants.kDriveFeedForward.calculate(referenceSpeed),
+                        + mVelocityFeedForward.calculate(referenceSpeed),
                 -Constants.kMaxVoltage, Constants.kMaxVoltage);
     }
 
@@ -124,8 +125,8 @@ public class DriveTrain extends FSM {
     }
 
     private void update() {
-        mLimeLight.setPipeline(Constants.kUpperPort);
+        Constants.kFrontLL.setPipeline(Constants.kUpperPort);
 
-        tx = mLimeLight.getTx();
+        tx = Constants.kFrontLL.getTx();
     }
 }

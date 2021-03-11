@@ -3,10 +3,9 @@ package com.team2568.frc2020;
 import com.team2568.frc2020.fsm.auto.Pivot.PivotAlgorithmMode;
 import com.team2568.lib.DifferentialDriveHelper;
 import com.team2568.lib.limelight.Distance;
+import com.team2568.lib.limelight.LimeLight;
 
-import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
-import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
 
 // All physical constants are in MKS and radians
 public class Constants {
@@ -55,6 +54,10 @@ public class Constants {
 	public static final int kPivotLimit = 1;
 	public static final int kClimbLLimit = 0;
 	public static final int kClimbULimit = 2;
+
+	// LimeLight Objects
+	public static final LimeLight kFrontLL = new LimeLight("limelight");
+	public static final LimeLight kBackLL = new LimeLight("lemontorch");
 
 	// Controller Constants
 	public static final double kTriggerThreshold = 0.3;
@@ -162,14 +165,14 @@ public class Constants {
 	public static final double kDistancePerRevolution = Math.PI * kWheelDiameter;
 	public static final double kGearReduction = 10.3846153846;
 
+	public static final double kMaxVoltage = 7;
+
 	public static final DifferentialDriveHelper kDriveHelper = new DifferentialDriveHelper(
 			(kDistancePerRevolution / kTicksToRevolution) / kGearReduction);
 
 	// Upper Port Constants
 	public static final double kUpperPortHeight = 2.1425; // Height to the center of the port for theta calculations
 	public static final double kUpperPortHeightDistance = 2.1425; // Lower than actual height b/c bounding box is lower
-
-	public static final double kG = 9.81; // Gravity Constant in MKS units
 
 	// Forward Facing Constants
 	public static final double kForwardLLMountingHeight = 0.4191;
@@ -178,10 +181,6 @@ public class Constants {
 	public static final Distance kForwardDistance = new Distance(kForwardLLMountingHeight, kForwardLLMountingAngle,
 			kUpperPortHeightDistance);
 
-	// Trajectory Constants
-	public static final double kMaxVoltage = 7;
-	public static final SimpleMotorFeedforward kDriveFeedForward = new SimpleMotorFeedforward(Constants.kVolt,
-			Constants.kVoltSecondPerMeter, Constants.kVoltSecondSquaredPerMeter);
-	public static final DifferentialDriveVoltageConstraint kVoltageConstraint = new DifferentialDriveVoltageConstraint(
-			kDriveFeedForward, kDriveKinematics, kMaxVoltage);
+	// Physics
+	public static final double kG = 9.81; // Gravity Constant in MKS units
 }
